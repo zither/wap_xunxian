@@ -1,10 +1,5 @@
 <?php
 
-if (!file_exists('db_configs.php')) {
-    die('未找到配置文件: db_configs.php，请先创建并配置数据库信息，可以参考 configs_example.php 文件');
-}
-$configs = include 'db_configs.php';
-
 if (!class_exists('DB')) {
     class DB
     {

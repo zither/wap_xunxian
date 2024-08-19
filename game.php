@@ -1,8 +1,20 @@
 <?php
+
+if (!file_exists('configs.php')) {
+    die('未找到配置文件: configs.php，请先创建并配置数据库信息，可以参考 configs_example.php 文件');
+}
+$configs = include 'configs.php';
+
 session_start();
 $start_time = microtime(true);
-//error_reporting(0);
-//ini_set('display_errors', '0');
+
+if ($confi['debug'] ?? false) {
+    error_reporting(E_ALL & ~E_NOTICE);
+} else {
+    error_reporting(0);
+    //ini_set('display_errors', '0');
+}
+
 require 'class/player.php';
 require 'class/encode.php';
 require 'class/gm.php';
@@ -1103,7 +1115,6 @@ echo $refresh_html;
             $stmt->bindParam(':gm_id', $gm_id, PDO::PARAM_STR);
             $stmt->execute();
             $column_exists = $stmt->rowCount() > 0;
-            var_dump($stmt->rowCount());
             if ($column_exists) {
                 // 字段存在，报错
             echo "不能添加重复的属性标识！<br/>";

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'debug' => false,
     'db_host' => '127.0.0.1',
     'db_name' => 'xunxian',
     'db_user' => 'xunxian',
