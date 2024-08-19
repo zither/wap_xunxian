@@ -1,4 +1,10 @@
 <?php
+
+if (!file_exists('configs.php')) {
+    die('未找到配置文件: configs.php，请先创建并配置数据库信息，可以参考 configs_example.php 文件');
+}
+$configs = include 'configs.php';
+
 include 'pdo.php';//导入pdo数据库模块
 require_once 'class/encode.php';//导入加密算法模块
 require_once 'class/gm.php';//导入后台管理员模块

@@ -1,4 +1,10 @@
 <?php
+
+if (!file_exists('configs.php')) {
+    die('未找到配置文件: configs.php，请先创建并配置数据库信息，可以参考 configs_example.php 文件');
+}
+$configs = include 'configs.php';
+
 include_once 'pdo.php';
 $dblj = DB::pdo();
 $Dcmd = $_SERVER['QUERY_STRING'];
