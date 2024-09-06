@@ -9,8 +9,6 @@ require_once 'class/player.php';
 require_once 'class/encode.php';
 include_once 'pdo.php';
 include_once 'class/iniclass.php';
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 
 $dblj = DB::pdo();
 $encode = new \encode\encode(); //创建一个名为 $encode 的新对象，并使用命名空间 \encode\encode() 实例化该对象。
@@ -22,14 +20,12 @@ parse_str($Dcmd, $result);
 $token = $result['token'];
 try {
     if (isset($token)) {
-        $sql = "select uid,sid,uis_designer from game1 where token='$token'";
-        $cxjg = $dblj->query($sql);
-        if ($cxjg) {
-            $cxjg->bindParam(':token', $token);
-            $cxjg->execute();
-            // 获取结果
-            $game1 = $cxjg->fetch(PDO::FETCH_ASSOC);
-        }
+        $sql = "select uid,sid,uis_designer from game1 where token= :token";
+        $cxjg = $dblj->prepare($sql);
+        $cxjg->bindParam(':token', $token);
+        $cxjg->execute();
+        // 获取结果
+        $game1 = $cxjg->fetch(PDO::FETCH_ASSOC);
         if (!empty($game1)) {
             $uid = $game1['uid'];
             $sid = $game1['sid'];
@@ -37,17 +33,12 @@ try {
         }
 
         $wjid = $uid ?? $result['uid'];
-        include './ini/xuser_ini.php';
-        $a10 = ($iniFile->getItem('验证信息', 'xcmid值'));
-        include 'sql_update.php';
         $sql = "SELECT username, designer FROM userinfo WHERE token = :token";
         $stmt = $dblj->prepare($sql);
         $stmt->bindParam(':token', $token);
         $stmt->execute();
-
         // 获取结果
         $userinfo = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!empty($userinfo)) {
             $username = $userinfo['username'];
             $designer = $userinfo['designer'];

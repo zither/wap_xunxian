@@ -8,11 +8,12 @@ $configs = include 'configs.php';
 session_start();
 $start_time = microtime(true);
 
-if ($confi['debug'] ?? false) {
-    error_reporting(E_ALL & ~E_NOTICE);
-} else {
-    error_reporting(0);
-}
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
+//if ($confi['debug'] ?? false) {
+//    error_reporting(E_ALL & ~E_NOTICE);
+//} else {
+//    error_reporting(0);
+//}
 
 require 'class/player.php';
 require 'class/encode.php';
@@ -21,14 +22,10 @@ include 'pdo.php';
 require 'class/lexical_analysis.php';
 require 'class/event_data_get.php';
 require 'class/data_lexical.php';
-include 'class/iniclass.php';
 include 'class/global_event_step_change.php';
 
 if (!$encode) {
     $encode = new \encode\encode();
-}
-if (!$player) {
-    $player = new \player\player();
 }
 if (!$gm_post) {
     $gm_post = \gm\gm_post($dblj);
@@ -171,99 +168,11 @@ HTML;
     // if($if_online ==1){
 
     // }
-    // 设置文件路径，使用相对路径
-    $file = sprintf("./ache/%s/user.ini", $wjid);
-
-    include("./ini/user_ini.php"); // 包含用户配置文件的逻辑
-
-    if ($refresh_cmid == 1) {
-        $iniFile->updItem('验证信息', ['xcmid值' => 1, 'dcmid值' => 1]);
-    }
 
 
-    //来源页面信息
-    $kcmid = $iniFile->getItem('验证信息', 'cmid值');
-    if ($kcmid == 0) {
-        $kcmid = 1;
-        $iniFile->updItem('验证信息', ['cmid值' => $kcmid]);
-    }
-    $iniFile->updItem('最后页面id', ['页面id' => $kcmid]);
-
-
-    //当前页面信息
-    $cljid = $iniFile->getItem('超链接值', $ucmd);
-    if ($cljid == "") {
-        $cljid = 1;
-    }
-    $iniFile->updItem('验证信息', ['cmid值' => $cljid]);
-    $show_cmid = $iniFile->getItem('验证信息', 'cmid值');
-    $user = $iniFile->getCategory('验证信息');
     if ($player->uis_designer == 1) {
         $test_code_text = $user;
         include_once 'gm/gm_test_code_show/gm_test_code_user.php'; //user测试代码显示
-    }
-    $xyid = "";
-    $xyid = $user['uid'] ?? 0;
-    $b1 = $user['年'];
-    $b2 = $user['月'];
-    $b3 = $user['日'];
-    $b4 = $user['时'];
-    $b5 = $user['分'];
-    $b6 = $user['秒'];
-    $cid = $user['cmid值'];
-    $xcid = $user['xcmid值'];
-    $dcid = $user['dcmid值'];
-    if ($cid == 0) {
-        $cid = 1;
-    }
-
-    // 初始化链接数组
-    $cdid = $clj = [];
-    //最小值
-    $a4 = $dcid + 1;
-    //cmd及超链接值
-    $cmid = $dcid + 1;
-    $cdid[] = $cmid;
-    $clj[] = 'gm_game_firstpage';
-    if ($ucmd >= $xcid && $ucmd <= $dcid || $ucmd == 1) {
-
-        $cmdd = $cid;
-        $y = date('Y') * 1;
-        $m = date('m') * 1;
-        $d = date('d') * 1;
-        $h = date('H') * 1;
-        $i = date('i') * 1;
-        $s = date('s') * 1;
-        $iniFile->updItem('验证信息', ['年' => $y, '月' => $m, '日' => $d, '时' => $h, '分' => $i, '秒' => $s]);
-    } else {
-        $yymid = ($iniFile->getItem('最后页面id', '页面id'));
-        if ($cmd == 'cj' || $cmd == 'cjplayer' || $cmd == 'login') {
-            goto THEMAINTASK;
-        } elseif ($yymid == 0) {
-            $cmdd = 1;
-        } else {
-            if ($is_Designer == 0) {
-                $cmid = $cmid + 1;
-                $cdid[] = $cmid;
-                $clj[] = $cmd;
-                if ($cmd == 'gm_game_firstpage') {
-                    $gonowmid = $encode->encode("cmd=gm_game_firstpage&ucmd=$cmid&sid=$sid");
-                } else {
-                    $gonowmid = $encode->encode("cmd=gm_scene_new&ucmd=$cmid&sid=$sid");
-                }
-                $html = <<<HTML
-                    <link rel="stylesheet" href="css/gamecss.css">
-                    <br/><font color = "red">禁止非法回退及恶意刷新操作，错误代码:{$cmid}</font><br/>
-                    <br/>
-                    <a href="?cmd=$gonowmid">返回游戏</a>
-HTML;
-                $a5 = $cmid;
-                $iniFile->updItem('验证信息', ['xcmid值' => $a4, 'dcmid值' => $a5]);
-                //$html_2 = file_get_contents('temporary_page.html'); // 读取文件内容
-                exit($html); // 输出文件内容并终止脚本执行
-            }
-        }
-        $iniFile->updItem('验证信息', ['cmid值' => $cmdd]);
     }
 
     if ($cmdd >= 1) {
@@ -280,13 +189,6 @@ HTML;
             exit($html);
         }
         goto THEMAINTASK;
-    } else {
-        //路径
-        $path = 'ache/' . $wjid;
-        //ini文件名字
-        $inina = "user.ini";
-        $ininame = $path . "/" . $inina;
-        $iniFile = new iniFile($ininame);
     }
 
     THEMAINTASK:
@@ -296,19 +198,6 @@ HTML;
             break;
         case 'login': //登录
             $player = \player\getplayer($sid, $dblj);
-            // 用户登录成功后生成并存储会话标识
-            // $ret = check_if_logged($sid);
-            // $deviceInfo = $_SERVER['HTTP_USER_AGENT'];// 使用设备信息作为标识
-            // if(!$ret || $ret !=$_SESSION['sessionID']){
-            // session_start();
-            // $sessionID = uniqid();
-            // $_SESSION['sessionID'] = $sessionID;
-            // //logout($sid);
-            // //login($sid,$_SESSION['sessionID'],$deviceInfo);
-            // }else{
-            // //login($sid,$_SESSION['sessionID'],$deviceInfo);
-            // }
-
 
             $event_data = global_event_data_get(2, $dblj);
             $event_cond = $event_data['system_event']['cond'];
@@ -2905,7 +2794,6 @@ HTML;
     // 13-17ms
 
     $currentFilePath = $ym;
-
     if (!empty($_POST)) {
         foreach ($_POST as $key => $value) {
             $is_designer_post_str .= $key . ' = ' . $value . '<br>';
@@ -3070,10 +2958,6 @@ HTML;
 </html>
 <?php
 //调用user.ini是否存在
-include("./ini/user_ini.php");
-$bugym = ($iniFile->getItem('最后页面id', '页面id'));
-//最大值
-$a5 = $cmid;
 //将cmd最小最大值写入
 $end_time = microtime(true);
 $execution_time = ceil(($end_time - $start_time) * 1000); // 单位是毫秒
@@ -3090,18 +2974,5 @@ HTML;
     $test_code_text = $gm_other_code;
     echo "<br/>";
     include_once 'gm/gm_test_code_show/gm_test_code_other.php';
-}
-$iniFile->updItem('验证信息', ['xcmid值' => $a4, 'dcmid值' => $a5]);
-//写入超链接及其所对应的值
-$iniFile->delCategory('超链接值');
-$aa = $a5 - $a4 + 1;
-for ($x = 0; $x < $aa; $x++) {
-    $q3 = $cdid[$x];
-    if (empty($q3)) {
-        continue;
-    }
-    $q4 = $clj[$x];
-    # 添加一个子项(如果子项存在，则覆盖;)
-    $iniFile->addItem('超链接值', [$q3 => $q4]);
 }
 ?>
