@@ -1,4 +1,5 @@
 <?php
+
 namespace lexical_analysis;
 
 use DB;
@@ -10,23 +11,27 @@ use Error;
 
 //input是原始输入，sid是用户识别码，uid用于特殊事件，oid用于o关键字，mid用于获取当前场景id或npc的id,para用于分辨是泛字符串解析还是纯变量解析
 
-class Cache {
+class Cache
+{
     private static $cache = [];
     private static $expiry = [];
 
-    public static function set($key, $value, $ttl) {
+    public static function set($key, $value, $ttl)
+    {
         self::$cache[$key] = $value;
         self::$expiry[$key] = time() + $ttl;
     }
 
-    public static function get($key) {
+    public static function get($key)
+    {
         if (isset(self::$cache[$key]) && time() < self::$expiry[$key]) {
             return self::$cache[$key];
         }
         return false;
     }
 
-    public static function clear($key) {
+    public static function clear($key)
+    {
         unset(self::$cache[$key]);
         unset(self::$expiry[$key]);
     }
@@ -70,7 +75,7 @@ function hurt_calc($jid = null, $sid, $gid, $type, $dblj, $pid = null)
         $stmt = $db->prepare($sql);
         $stmt->execute([':pid' => $pid]);
         $ret = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         if ($ret) {
             $pets_skills = $ret['jid'];
             if (!$pets_skills) {
@@ -84,24 +89,24 @@ function hurt_calc($jid = null, $sid, $gid, $type, $dblj, $pid = null)
                 $stmt = $db->prepare($sql);
                 $stmt->execute([':pets_skills' => $pets_skills]);
                 $ret = $stmt->fetch(PDO::FETCH_ASSOC);
-                
+
                 if ($ret) {
                     $p_umsg = $ret['jeffect_cmmt'];
                     $p_hurt_exp = $ret['jhurt_exp'];
                     $p_group_attack = $ret['jgroup_attack'];
                     $p_event_use_id = $ret['jevent_use_id'];
                 }
-                
+
                 if (!$p_hurt_exp) {
                     $sql = "SELECT jhurt_exp FROM system_skill_module WHERE jid = '2'";
                     $stmt = $db->prepare($sql);
                     $stmt->execute();
                     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                    
+
                     if ($row) {
                         $p_hurt_exp = $row['jhurt_exp'];
                     }
-                    
+
                     if (!$p_hurt_exp) {
                         $p_hurt_exp = 1;
                     }
@@ -160,11 +165,11 @@ function hurt_calc($jid = null, $sid, $gid, $type, $dblj, $pid = null)
                     $sql = "UPDATE system_npc_midguaiwu SET nhp = nhp - :hurt_cut, nsid = :sid WHERE ngid = :attack_gid";
                     $stmt = $dblj->prepare($sql);
                     $stmt->execute([':hurt_cut' => $hurt_cut, ':sid' => $sid, ':attack_gid' => $attack_gid]);
-                    
+
                     $sql = "UPDATE game2 SET hurt_hp = :hurt_cut WHERE gid = :attack_gid";
                     $stmt = $dblj->prepare($sql);
                     $stmt->execute([':hurt_cut' => $hurt_cut, ':attack_gid' => $attack_gid]);
-                    
+
                     $j_umsg = \lexical_analysis\process_string($j_umsg, $sid, 'npc', $attack_gid_para);
                     $sql = "UPDATE game2 SET fight_umsg = :j_umsg WHERE sid = :sid AND gid = :attack_gid";
                     $stmt = $dblj->prepare($sql);
@@ -208,7 +213,7 @@ function hurt_calc($jid = null, $sid, $gid, $type, $dblj, $pid = null)
                         $j_omsg = $ret['jeffect_cmmt'];
                         $j_hurt_exp = $ret['jhurt_exp'];
                         $j_group_attack = $ret['jgroup_attack'];
-                        
+
                         if (!$j_hurt_exp) {
                             $sql = "SELECT jhurt_exp FROM system_skill_module WHERE jid = '2'";
                             $stmt = $dblj->query($sql);
@@ -222,7 +227,7 @@ function hurt_calc($jid = null, $sid, $gid, $type, $dblj, $pid = null)
                         $hurt_cut = @eval("return $hurt_cut;");
                         $hurt_cut = (int)floor($hurt_cut);
                         $g_hurt_cut = ($hurt_cut >= 0) ? abs($hurt_cut) : 1;
-                        
+
                         $dblj->exec("UPDATE game1 SET uhp = uhp - '$g_hurt_cut' WHERE sid = '$sid'");
                         $dblj->exec("UPDATE game2 SET cut_hp = '$g_hurt_cut' WHERE sid = '$sid' AND gid = '$attack_gid'");
                     }
@@ -243,20 +248,20 @@ function hurt_calc($jid = null, $sid, $gid, $type, $dblj, $pid = null)
 
                 if ($attack_gid_root) {
                     $attack_gid_para = $attack_gid_root . "|" . $attack_gid;
-                    
+
                     $hurt_cut = process_string_3($p_hurt_exp, $pid, $attack_gid, $pets_skills, $sid, null, 1);
-                    $hurt_cut = @eval("return $hurt_cut;"); 
+                    $hurt_cut = @eval("return $hurt_cut;");
                     $hurt_cut = (int)floor($hurt_cut);
                     $hurt_cut = $hurt_cut <= 0 ? 1 : $hurt_cut;
-                    
+
                     $sql = "UPDATE system_npc_midguaiwu SET nhp = nhp - $hurt_cut, nsid = '$sid' WHERE ngid = '$attack_gid'";
                     $dblj->exec($sql);
-                    
+
                     $sql = "UPDATE game2 SET hurt_hp = hurt_hp + $hurt_cut WHERE gid = '$attack_gid'";
                     $dblj->exec($sql);
-                    
+
                     $p_umsg = \lexical_analysis\process_string_3($p_umsg, $pid, $attack_gid, $pets_skills, $sid, null, 1);
-                    
+
                     $sql = "UPDATE game2 SET fight_umsg = '$p_umsg' WHERE sid = '$sid' AND gid = '$attack_gid' AND pid = '$pid'";
                     $dblj->exec($sql);
                 }
@@ -269,13 +274,13 @@ function hurt_calc($jid = null, $sid, $gid, $type, $dblj, $pid = null)
                 $attack_gid_para = $attack_gid_root . "|" . $attack_gid;
                 if ($attack_gid_root) {
                     $hurt_cut = process_string_3($p_hurt_exp, $pid, $attack_gid, $pets_skills, $sid, null, 1);
-                    $hurt_cut = @eval("return $hurt_cut;"); 
+                    $hurt_cut = @eval("return $hurt_cut;");
                     $hurt_cut = (int)floor($hurt_cut);
                     $hurt_cut = $hurt_cut <= 0 ? 1 : $hurt_cut;
-                    
+
                     $sql = "UPDATE system_npc_midguaiwu SET nhp = nhp - $hurt_cut, nsid = '$sid' WHERE ngid = '$attack_gid'";
                     $dblj->exec($sql);
-                    
+
                     $sql = "UPDATE game2 SET hurt_hp = hurt_hp + $hurt_cut WHERE gid = '$attack_gid'";
                     $dblj->exec($sql);
 
@@ -492,7 +497,7 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                 $mid_refresh_time = $row['mrefresh_time'];
                 $op = $mid_refresh_time - floor((strtotime($nowdate) - strtotime($mid_time)) / 60); //获取刷新分钟剩余
             } elseif (strpos($attr2, "team_member_count") === 0) {
-               $sql = "SELECT team_member FROM system_team_user WHERE team_member IN (SELECT uid FROM game1 WHERE sid = :sid)";
+                $sql = "SELECT team_member FROM system_team_user WHERE team_member IN (SELECT uid FROM game1 WHERE sid = :sid)";
                 // 使用预处理语句
                 $stmt = $db->prepare($sql);
                 // 执行查询
@@ -739,7 +744,7 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                     // 执行查询并检查是否有结果
                     $stmt = $db->query($sql);
                     $idArray = $stmt->fetchAll(PDO::FETCH_COLUMN);
-                    
+
                     $equiped_pos = $idArray[$equiped_pos];
 
                     $fid = $attr4;
@@ -753,7 +758,7 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                     // 获取查询结果
                     $row = $stmt->fetch(PDO::FETCH_ASSOC);
                     $op = $row["eq_true_id"] ?? 0;
-                    
+
                     if ($op) {
                         if (strpos($attr4, 'embed.') === 0) {
                             $attr5 = substr($attr4, 6); // 提取 "embed." 后面的部分
@@ -929,7 +934,7 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                 $stmt = $db->prepare($sql);
                 $stmt->execute([':attr3' => $attr3]);
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                
+
                 if (count($result) > 0) {
                     $sql = "SELECT * FROM game1 WHERE sid = :sid";
                     $stmt = $db->prepare($sql);
@@ -940,9 +945,9 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                     $stmt->execute([':sid' => $sid, ':attr3' => $attr3]);
                     $attr_type = 1;
                 }
-                
+
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                
+
                 if ($row === false || $row === null) {
                     $op = 0; // 或其他默认值
                 } else {
@@ -952,7 +957,7 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                         $op = nl2br($row['value']);
                     }
                 }
-                
+
                 $op = process_string($op, $sid, $oid, $mid, $jid, $type, $para);
                 // 替换字符串中的变量
             }
@@ -990,18 +995,18 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                     $total_cut_hp_2 = $row_2["total_cut_hp"];
                     $op = ($total_cut_hp <= 0 ? "+" : "-") . abs($total_cut_hp);
                     $op_2 = ($total_cut_hp_2 <= 0 ? "+" : "-") . abs($total_cut_hp_2);
-                    
+
                     // 合并字符串
                     if ($total_cut_hp_2 != 0) {
                         $op = $op . $op_2;
                     } else {
                         $op = $op;
                     }
-                    
+
                     if ($op === null || $op == '') {
                         $op = "\"\""; // 或其他默认值
                     }
-                    
+
                     $op = process_string($op, $sid, $oid, $mid, $jid, $type, $para);
                     break;
                 case 'busy':
@@ -1426,8 +1431,8 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
             if ($para != 1) {
                 switch ($type) {
                     case 'fight':
-                        $attr3 = 'j'.$attr2;
-                        if($attr3 == "jlvl" || $attr3 == "jpoint" || $attr3 == "jdefault"){
+                        $attr3 = 'j' . $attr2;
+                        if ($attr3 == "jlvl" || $attr3 == "jpoint" || $attr3 == "jdefault") {
                             $sql = "SELECT * FROM system_skill_user WHERE jid = :jid AND jsid = :jsid";
                             $stmt = $db->prepare($sql);
                             $stmt->execute([':jid' => $jid, ':jsid' => $sid]);
@@ -1466,12 +1471,12 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                         //$input = str_replace("{{$match}}", $op, $input);
                         break;
                     default:
-                        $attr3 = 'j'.$attr2;
-                        if($attr3 =="jlvl" ||$attr3 == "jpoint"||$attr3 =="jdefault"){
+                        $attr3 = 'j' . $attr2;
+                        if ($attr3 == "jlvl" || $attr3 == "jpoint" || $attr3 == "jdefault") {
                             $sql = "SELECT * FROM system_skill_user WHERE jid = :jid AND jsid = :jsid";
                             $stmt = $db->prepare($sql);
                             $stmt->execute([':jid' => $jid, ':jsid' => $sid]);
-                        }else{
+                        } else {
                             $sql = "SELECT * FROM system_skill WHERE jid = :jid";
                             $stmt = $db->prepare($sql);
                             $stmt->execute([':jid' => $jid]);
@@ -1487,14 +1492,14 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
                         } else {
                             $op = nl2br($row_result);
                         }
-                        $op = process_string($op,$sid,$oid,$mid,$jid,$type,$para);
-                        if($attr3 == "jgroup_attack"){
-                            if($row_result == -1){
+                        $op = process_string($op, $sid, $oid, $mid, $jid, $type, $para);
+                        if ($attr3 == "jgroup_attack") {
+                            if ($row_result == -1) {
                                 $op = "群体";
-                            }elseif ($row_result == 1) {
+                            } elseif ($row_result == 1) {
                                 $op = "单体";
                             }
-                        }elseif($attr3 =="jhurt_attr" || $attr3 =="jdeplete_attr"){
+                        } elseif ($attr3 == "jhurt_attr" || $attr3 == "jdeplete_attr") {
                             // 查询获取 name 字段值
                             $query = "SELECT name FROM gm_game_attr WHERE value_type = 1 AND id = :id";
                             $stmt = $db->prepare($query);
@@ -1797,7 +1802,8 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
 }
 
 // 定义处理字符串的函数
-function process_string($input, $sid, $oid = null, $mid = null, $jid = null, $type = null, $para = null) {
+function process_string($input, $sid, $oid = null, $mid = null, $jid = null, $type = null, $para = null)
+{
     $db = DB::pdo();
 
     $matches = [];
@@ -1809,15 +1815,14 @@ function process_string($input, $sid, $oid = null, $mid = null, $jid = null, $ty
                 $attr1 = substr($match, 0, $firstDotPosition);
                 $attr2 = substr($match, $firstDotPosition + 1);
                 // 使用 process_attribute 处理单个属性
-                $op = process_attribute($attr1,$attr2,$sid, $oid, $mid,$jid,$type,$db,$para);
-                if($op =='' || $op == "" || $op ==null){
+                $op = process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $para);
+                if ($op == '' || $op == "" || $op == null) {
                     $op = 0;
                 }
                 // var_dump($match);
                 // var_dump($op);
                 // 替换字符串中的变量
                 $input = str_replace("v({$match})", $op, $input);
-                
             }
         }
     }
@@ -1872,24 +1877,26 @@ function evaluate_expression_2($expr, $db, $sid, $oid, $mid, $jid, $type, $para 
         return $eval_result; // 返回计算结果
     }, $expr);
     //var_dump($expr);
-    $expr = preg_replace_callback('/\{([^}]+)\}/', function ($matches) use ($db, $sid, $oid, $mid, $jid, $type, $para) {
-        $attr = $matches[1]; // 获取匹配到的变量名
-        $firstDotPosition = strpos($attr, '.');
-        if (!empty($firstDotPosition)) {
-            $attr1 = substr($attr, 0, $firstDotPosition);
-            $attr2 = substr($attr, $firstDotPosition + 1);
-            // 使用 process_attribute 处理单个属性
-            $op = process_attribute_2($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $para);
-            // 替换字符串中的变量
-        }
+    $expr = preg_replace_callback(
+        '/\{([^}]+)\}/',
+        function ($matches) use ($db, $sid, $oid, $mid, $jid, $type, $para) {
+            $attr = $matches[1]; // 获取匹配到的变量名
+            $firstDotPosition = strpos($attr, '.');
+            if (!empty($firstDotPosition)) {
+                $attr1 = substr($attr, 0, $firstDotPosition);
+                $attr2 = substr($attr, $firstDotPosition + 1);
+                // 使用 process_attribute 处理单个属性
+                $op = process_attribute_2($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $para);
+                // 替换字符串中的变量
+            }
 
-        // 在这里根据变量名获取对应的值，例如从数据库中查询
-        // 假设你从数据库中获取了 $attr_value
-        if ($para == 'cond_exp') {
-            $op = "(bool)\"$op\"";
-        }
-        return $op;
-    },
+            // 在这里根据变量名获取对应的值，例如从数据库中查询
+            // 假设你从数据库中获取了 $attr_value
+            if ($para == 'cond_exp') {
+                $op = "(bool)\"$op\"";
+            }
+            return $op;
+        },
         $expr
     );
     //var_dump($expr);
@@ -1939,10 +1946,10 @@ function process_attribute_2($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db,
                             foreach ($npcs as $npc) {
                                 $npc_show_cond = urldecode(explode("|", $npc)[2]);
                                 $show_cond = checkTriggerCondition($npc_show_cond, $db, $sid);
-                                if(is_null($show_cond)){
+                                if (is_null($show_cond)) {
                                     $show_cond = true;
                                 }
-                                if($show_cond){
+                                if ($show_cond) {
                                     list(, $npcCount) = explode("|", $npc);
                                     $totalNpcCount += (int)$npcCount; // 将每个npc的数量累加
                                 }
@@ -2547,16 +2554,16 @@ function process_attribute_3($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db,
             if (strpos($attr2, "env.") === 0) {
                 $attr3 = substr($attr2, 4); // 提取 "env." 后面的部分
                 switch ($attr3) {
-                        case 'user_count':
+                    case 'user_count':
                         // 构建 SQL 查询语句
                         $sql = "SELECT COUNT(*) as count FROM game1 WHERE sfzx=1 and nowmid IN (SELECT nowmid FROM game1 WHERE sid = :sid)";
-                        
+
                         // 使用预处理语句
                         $stmt = $db->prepare($sql);
-                        
+
                         // 绑定参数并执行查询
                         $stmt->execute([':sid' => $sid]);
-                        
+
                         // 获取查询结果
                         $op = $stmt->fetchColumn();
                         break;
@@ -2564,10 +2571,10 @@ function process_attribute_3($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db,
                         $sql = "SELECT mnpc_now FROM system_map WHERE mid = (SELECT nowmid FROM game1 WHERE sid = :sid)";
                         // 使用预处理语句
                         $stmt = $db->prepare($sql);
-                        
+
                         // 执行查询
                         $stmt->execute([':sid' => $sid]);
-                        
+
                         // 获取查询结果
                         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         // 处理结果
@@ -2578,10 +2585,10 @@ function process_attribute_3($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db,
                             foreach ($npcs as $npc) {
                                 $npc_show_cond = urldecode(explode("|", $npc)[2]);
                                 $show_cond = checkTriggerCondition($npc_show_cond, $db, $sid);
-                                if(is_null($show_cond)){
+                                if (is_null($show_cond)) {
                                     $show_cond = true;
                                 }
-                                if($show_cond){
+                                if ($show_cond) {
                                     list(, $npcCount) = explode("|", $npc);
                                     $totalNpcCount += (int)$npcCount; // 将每个npc的数量累加
                                 }
@@ -2784,17 +2791,17 @@ function process_attribute_3($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db,
                     }
                     break;
                 case 'fight_omsg':
-                        $sql = "SELECT * FROM game3 WHERE sid = :sid";
-                        // 使用预处理语句
-                        $stmt = $db->prepare($sql);
-                        // 执行查询
-                        $stmt->execute([':sid' => $sid]);
-                        // 获取查询结果
-                        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                        $op = $row["fight_omsg"] ?? '';
-                        if ($op === null || $op === '') {
-                            $op = "\"\""; // 或其他默认值
-                        }
+                    $sql = "SELECT * FROM game3 WHERE sid = :sid";
+                    // 使用预处理语句
+                    $stmt = $db->prepare($sql);
+                    // 执行查询
+                    $stmt->execute([':sid' => $sid]);
+                    // 获取查询结果
+                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $op = $row["fight_omsg"] ?? '';
+                    if ($op === null || $op === '') {
+                        $op = "\"\""; // 或其他默认值
+                    }
                     break;
             }
             break;
@@ -3105,7 +3112,8 @@ function process_attribute_3($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db,
 }
 
 // 定义处理字符串的函数
-function process_string_3($input, $sid, $oid = null, $mid = null, $jid = null, $type = null, $para = null) {
+function process_string_3($input, $sid, $oid = null, $mid = null, $jid = null, $type = null, $para = null)
+{
     $db = DB::pdo();
     $matches = [];
     preg_match_all('/v\(([\w.]+)\)/', $input, $matches);
@@ -3117,8 +3125,8 @@ function process_string_3($input, $sid, $oid = null, $mid = null, $jid = null, $
                 $attr1 = substr($match, 0, $firstDotPosition);
                 $attr2 = substr($match, $firstDotPosition + 1);
                 // 使用 process_attribute 处理单个属性
-                $op = process_attribute_3($attr1,$attr2,$sid, $oid, $mid,$jid,$type,$db,$para);
-                if($op =='' || $op == "" || $op ==null){
+                $op = process_attribute_3($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $para);
+                if ($op == '' || $op == "" || $op == null) {
                     $op = "\"\"";
                 }
                 // 替换字符串中的变量
@@ -3203,5 +3211,3 @@ function process_photoshow($input)
 
     return $input;
 }
-
-?>

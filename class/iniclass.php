@@ -21,7 +21,7 @@ class iniFile
             $this->iniFileHandle = parse_ini_file($this->iniFilePath, true);
 
             if (empty($this->iniFileHandle)) {
-               unlink($this->iniFilePath);
+                unlink($this->iniFilePath);
             }
         } else {
             die($this->iniFilePath . ' file cannot be opened');

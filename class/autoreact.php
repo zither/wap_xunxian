@@ -1,6 +1,7 @@
 <?php
 include_once 'pdo.php';
-function player_minute(){
+function player_minute()
+{
     global $dblj;
     $nowdate = date('Y-m-d H:i:s');
     $sql = "update gm_game_basic set game_player_regular_minute = '$nowdate'";
@@ -23,4 +24,3 @@ function player_minute(){
 // function system_minute(){
 //     echo "你好！";
 // }
-?>

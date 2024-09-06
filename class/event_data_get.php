@@ -1,5 +1,6 @@
 <?php
-function get_system_event_data($event_id,$dblj) {
+function get_system_event_data($event_id, $dblj)
+{
     try {
         // 准备查询语句
         $query = "SELECT * FROM system_event WHERE id = :event_id";
@@ -20,7 +21,8 @@ function get_system_event_data($event_id,$dblj) {
     }
 }
 
-function get_self_event_data($event_id,$dblj) {
+function get_self_event_data($event_id, $dblj)
+{
     try {
         // 准备查询语句
         $query = "SELECT * FROM system_event_self WHERE id = :event_id";
@@ -40,7 +42,8 @@ function get_self_event_data($event_id,$dblj) {
     }
 }
 
-function get_npc_event_data($event_id,$dblj) {
+function get_npc_event_data($event_id, $dblj)
+{
     try {
         // 准备查询语句
         $query = "SELECT * FROM system_npc_op WHERE id = :event_id";
@@ -60,7 +63,8 @@ function get_npc_event_data($event_id,$dblj) {
     }
 }
 
-function get_system_event_evs_data($link_evs,$dblj) {
+function get_system_event_evs_data($link_evs, $dblj)
+{
     // 构建 IN 子句的占位符
     $placeholders = implode(',', array_fill(0, count($link_evs), '?'));
     // 准备查询语句
@@ -76,7 +80,8 @@ function get_system_event_evs_data($link_evs,$dblj) {
     return $result;
 }
 
-function get_self_event_evs_data($link_evs,$dblj) {
+function get_self_event_evs_data($link_evs, $dblj)
+{
     // 构建 IN 子句的占位符
     $placeholders = implode(',', array_fill(0, count($link_evs), '?'));
     // 准备查询语句
@@ -92,7 +97,8 @@ function get_self_event_evs_data($link_evs,$dblj) {
     return $result;
 }
 
-function get_npc_event_evs_data($link_evs,$dblj) {
+function get_npc_event_evs_data($link_evs, $dblj)
+{
     // 构建 IN 子句的占位符
     $placeholders = implode(',', array_fill(0, count($link_evs), '?'));
     // 准备查询语句
@@ -110,90 +116,74 @@ function get_npc_event_evs_data($link_evs,$dblj) {
 
 
 
-function global_event_data_get($event_id,$dblj) {
+function global_event_data_get($event_id, $dblj)
+{
     $event_data = array();
-    $system_event_data = get_system_event_data($event_id,$dblj);
-            
+    $system_event_data = get_system_event_data($event_id, $dblj);
+
     if (!empty($system_event_data)) {
         $link_evs = $system_event_data['link_evs'];
-                
+
         // 检查 link_evs 是否为空
         if (!empty($link_evs)) {
-                    // 获取system_event_evs表中id等于link_evs值的所有数据
+            // 获取system_event_evs表中id等于link_evs值的所有数据
             $link_evs = explode(',', $link_evs);
-            $system_event_evs_data = get_system_event_evs_data($link_evs,$dblj);
-                } else {
-                    $system_event_evs_data = array();
-                }
-                
-                // 将结果存入event_data数组
-                $event_data['system_event'] = $system_event_data;
-                $event_data['system_event_evs'] = $system_event_evs_data;
-            }
-            return $event_data;
-}
+            $system_event_evs_data = get_system_event_evs_data($link_evs, $dblj);
+        } else {
+            $system_event_evs_data = array();
+        }
 
-function self_event_data_get($event_id,$dblj) {
-    $event_data = array();
-            // 获取system_event表中id等于$event_id的所有数据以及link_evs字段的值
-            $system_event_data = get_self_event_data($event_id,$dblj);
-            if (!empty($system_event_data)) {
-                $link_evs = $system_event_data['link_evs'];
-                
-                // 检查 link_evs 是否为空
-                if (!empty($link_evs)) {
-                    // 获取system_event_evs表中id等于link_evs值的所有数据
-                    $link_evs = explode(',', $link_evs);
-                    $system_event_evs_data = get_self_event_evs_data($link_evs,$dblj);
-                } else {
-                    $system_event_evs_data = array();
-                }
-                
-                // 将结果存入event_data数组
-                $event_data['system_event'] = $system_event_data;
-                $event_data['system_event_evs'] = $system_event_evs_data;
-            }
+        // 将结果存入event_data数组
+        $event_data['system_event'] = $system_event_data;
+        $event_data['system_event_evs'] = $system_event_evs_data;
+    }
     return $event_data;
 }
 
-function npc_event_data_get($event_id,$dblj) {
+function self_event_data_get($event_id, $dblj)
+{
     $event_data = array();
-            // 获取system_event表中id等于$event_id的所有数据以及link_evs字段的值
-            $system_event_data = get_npc_event_data($event_id,$dblj);
-            if (!empty($system_event_data)) {
-                $link_evs = $system_event_data['link_evs'];
-                
-                // 检查 link_evs 是否为空
-                if (!empty($link_evs)) {
-                    // 获取system_event_evs表中id等于link_evs值的所有数据
-                    $link_evs = explode(',', $link_evs);
-                    $system_event_evs_data = get_npc_event_evs_data($link_evs,$dblj);
-                } else {
-                    $system_event_evs_data = array();
-                }
-                
-                // 将结果存入event_data数组
-                $event_data['system_event'] = $system_event_data;
-                $event_data['system_event_evs'] = $system_event_evs_data;
-            }
+    // 获取system_event表中id等于$event_id的所有数据以及link_evs字段的值
+    $system_event_data = get_self_event_data($event_id, $dblj);
+    if (!empty($system_event_data)) {
+        $link_evs = $system_event_data['link_evs'];
+
+        // 检查 link_evs 是否为空
+        if (!empty($link_evs)) {
+            // 获取system_event_evs表中id等于link_evs值的所有数据
+            $link_evs = explode(',', $link_evs);
+            $system_event_evs_data = get_self_event_evs_data($link_evs, $dblj);
+        } else {
+            $system_event_evs_data = array();
+        }
+
+        // 将结果存入event_data数组
+        $event_data['system_event'] = $system_event_data;
+        $event_data['system_event_evs'] = $system_event_evs_data;
+    }
     return $event_data;
 }
 
+function npc_event_data_get($event_id, $dblj)
+{
+    $event_data = array();
+    // 获取system_event表中id等于$event_id的所有数据以及link_evs字段的值
+    $system_event_data = get_npc_event_data($event_id, $dblj);
+    if (!empty($system_event_data)) {
+        $link_evs = $system_event_data['link_evs'];
 
+        // 检查 link_evs 是否为空
+        if (!empty($link_evs)) {
+            // 获取system_event_evs表中id等于link_evs值的所有数据
+            $link_evs = explode(',', $link_evs);
+            $system_event_evs_data = get_npc_event_evs_data($link_evs, $dblj);
+        } else {
+            $system_event_evs_data = array();
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>
+        // 将结果存入event_data数组
+        $event_data['system_event'] = $system_event_data;
+        $event_data['system_event_evs'] = $system_event_evs_data;
+    }
+    return $event_data;
+}

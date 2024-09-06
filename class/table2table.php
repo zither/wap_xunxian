@@ -5,10 +5,10 @@
 
 require_once 'pdo.php';
 
-if($gm_map_canshu == "1"){
-$post_tishi = '修改成功';
+if ($gm_map_canshu == "1") {
+    $post_tishi = '修改成功';
 }
-$map_id = $target_midid;//这里接受其他地方传来的map_id
+$map_id = $target_midid; //这里接受其他地方传来的map_id
 
 $area_main = $encode->encode("cmd=gm_post_4&target_midid=$map_id&sid=$sid");
 
@@ -55,7 +55,7 @@ foreach ($attr_array as $id => $attr) {
     var_dump($id);
     switch ($id) {
         case 'id':
-        $map_mid_page .= <<<HTML
+            $map_mid_page .= <<<HTML
     $name:s{$value}<br/>
 HTML;
             break;
@@ -73,34 +73,33 @@ HTML;
             foreach ($data as $area_row) {
                 $selected = ($area_row['id'] == $value) ? ' selected' : '';
                 $select .= '<option value="' . htmlspecialchars($area_row['id']) . '"' . $selected . '>' . htmlspecialchars($area_row['name']) . '</option>';
-                
             }
             $select .= '</select><br/>';
-                $map_mid_page .= <<<HTML
+            $map_mid_page .= <<<HTML
                 $select
 HTML;
             break;
-            case 'name':
+        case 'name':
             $map_mid_page .= <<<HTML
             名称:<input name="$id" type="text" value="$value" maxlength="200"/><br/>
 HTML;
             $scene_name = $value;
-                break;
-            case 'photo':
+            break;
+        case 'photo':
             $map_mid_page .= <<<HTML
             $name:<input name="$id" type="text" value="$value" maxlength="200"/><br/>
 HTML;
-                break;
-            case 'refresh_time':
+            break;
+        case 'refresh_time':
             $map_mid_page .= <<<HTML
             $name:<input name="$id" type="text" value="$value" maxlength="200"/><br/>
 HTML;
-                break;
-            case 'desc':
+            break;
+        case 'desc':
             $map_mid_page .= <<<HTML
             $name:<textarea name="$id" maxlength="200" rows="4" cols="40">$value</textarea><br/>
 HTML;
-                break;
+            break;
         default:
             $map_mid_page .= <<<HTML
             $name:<input name="$id" type="text" value="$value" size="10" maxlength="10"/><br/>
@@ -124,4 +123,3 @@ $post_tishi
     <a href="game.php?cmd=$area_main">返回上级</a><br/>
 HTML;
 echo $map_page;
-?>
