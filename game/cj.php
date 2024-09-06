@@ -15,8 +15,3 @@ $html = <<<HTML
 </form>
 HTML;
 echo $html;
-?>
-
-
-
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Administrator
@@ -11,35 +12,35 @@ $ypfy = '';
 $ypbj = '';
 $ypxx = '';
 $gonowmid = $encode->encode("cmd=gomid&newmid=$player->nowmid&sid=$sid");
-$yaopin = \player\getyaopinonce($ypid,$dblj);
-$playeryp = \player\getplayeryaopin($ypid,$sid,$dblj);
+$yaopin = \player\getyaopinonce($ypid, $dblj);
+$playeryp = \player\getplayeryaopin($ypid, $sid, $dblj);
 $setyp = '';
-$tishi='';
-if (isset($canshu)){
-    switch ($canshu){
+$tishi = '';
+if (isset($canshu)) {
+    switch ($canshu) {
         case 'setyp1':
-            \player\changeplayersx('yp1',$ypid,$sid,$dblj);
+            \player\changeplayersx('yp1', $ypid, $sid, $dblj);
             $tishi = "设置药品1成功<br/>";
             break;
         case 'setyp2':
-            \player\changeplayersx('yp2',$ypid,$sid,$dblj);
+            \player\changeplayersx('yp2', $ypid, $sid, $dblj);
             $tishi = "设置药品2成功<br/>";
             break;
         case 'setyp3':
-            \player\changeplayersx('yp3',$ypid,$sid,$dblj);
+            \player\changeplayersx('yp3', $ypid, $sid, $dblj);
             $tishi = "设置药品3成功<br/>";
             break;
         case 'useyp':
-            $userypret = \player\useyaopin($ypid,1,$sid,$dblj);
-            if ($userypret){
+            $userypret = \player\useyaopin($ypid, 1, $sid, $dblj);
+            if ($userypret) {
                 $tishi = "使用药品成功<br/>";
-            }else{
+            } else {
                 $tishi = "使用药品失败<br/>";
             }
             break;
     }
 }
-if ($playeryp){
+if ($playeryp) {
     $setyp1 = $encode->encode("cmd=ypinfo&canshu=setyp1&ypid=$ypid&sid=$sid");
     $setyp2 = $encode->encode("cmd=ypinfo&canshu=setyp2&ypid=$ypid&sid=$sid");
     $setyp3 = $encode->encode("cmd=ypinfo&canshu=setyp3&ypid=$ypid&sid=$sid");
@@ -52,22 +53,22 @@ if ($playeryp){
     <a href="?cmd=$useyp">使用</a>
 HTML;
 }
-if($yaopin->yphp!=0){
-    $yphp = "气血".$yaopin->yphp."<br/>";
+if ($yaopin->yphp != 0) {
+    $yphp = "气血" . $yaopin->yphp . "<br/>";
 }
-if ($yaopin->ypgj!=0){
-    $ypgj = "攻击".$yaopin->ypgj."<br/>";
+if ($yaopin->ypgj != 0) {
+    $ypgj = "攻击" . $yaopin->ypgj . "<br/>";
 }
-if ($yaopin->ypfy!=0){
-    $ypfy = "防御".$yaopin->ypfy."<br/>";
+if ($yaopin->ypfy != 0) {
+    $ypfy = "防御" . $yaopin->ypfy . "<br/>";
 }
-if ($yaopin->ypbj!=0){
-    $ypbj = "暴击".$yaopin->ypbj."<br/>";
+if ($yaopin->ypbj != 0) {
+    $ypbj = "暴击" . $yaopin->ypbj . "<br/>";
 }
-if ($yaopin->ypxx!=0){
-    $ypxx = "吸血".$yaopin->ypxx."<br/>";
+if ($yaopin->ypxx != 0) {
+    $ypxx = "吸血" . $yaopin->ypxx . "<br/>";
 }
-$ypsx = "<br/>".$yphp.$ypgj.$ypfy.$ypbj.$ypxx;
+$ypsx = "<br/>" . $yphp . $ypgj . $ypfy . $ypbj . $ypxx;
 $ypinfo = <<<HTML
 $tishi
 [$yaopin->ypname]<br/>

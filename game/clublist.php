@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Administrator
@@ -7,19 +8,19 @@
  */
 $clublist = '';
 $allclub = \player\getclub_all($dblj);
-$player = \player\getplayer($sid,$dblj);
+$player = \player\getplayer($sid, $dblj);
 $gonowmid = $encode->encode("cmd=gomid&newmid=$player->nowmid&sid=$sid");
 
-if ($allclub){
+if ($allclub) {
     $i = 0;
-    foreach ($allclub as $club){
+    foreach ($allclub as $club) {
         $i++;
         $clubcmd = $encode->encode("cmd=club&clubid={$club['clubid']}&sid=$sid");
         $clublist .= "[$i]<a href='?cmd=$clubcmd' >{$club['clubname']}</a><br/>";
     }
 }
 
-$clubhtml =<<<HTML
+$clubhtml = <<<HTML
 ===========门派天榜===========
       <br/>
       $clublist<br/>

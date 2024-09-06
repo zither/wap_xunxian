@@ -1,8 +1,8 @@
 <?php
-$player = \player\getplayer($sid,$dblj);
+$player = \player\getplayer($sid, $dblj);
 $gonowmid = $encode->encode("cmd=gomid&newmid=$player->nowmid&sid=$sid");
 $zhuangbei = new \player\zhuangbei();
-$zhuangbei = player\getzbkzb($zbid,$dblj);
+$zhuangbei = player\getzbkzb($zbid, $dblj);
 
 $html = <<<HTML
 装备名称:$zhuangbei->zbname<br/>
@@ -19,4 +19,3 @@ $html = <<<HTML
 <a href="?cmd=$gonowmid">返回游戏</a>
 HTML;
 echo $html;
-?>

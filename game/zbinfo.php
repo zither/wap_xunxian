@@ -1,14 +1,14 @@
 <?php
 
-$player = \player\getplayer($sid,$dblj);
+$player = \player\getplayer($sid, $dblj);
 $gonowmid = $encode->encode("cmd=gomid&newmid=$player->nowmid&sid=$sid");
 $zhuangbei = new \player\zhuangbei();
-if ($zbnowid!=0){
-    $zhuangbei = player\getzb($zbnowid,$dblj);
+if ($zbnowid != 0) {
+    $zhuangbei = player\getzb($zbnowid, $dblj);
 }
 
-$arr = array($player->tool1,$player->tool2,$player->tool3,$player->tool4,$player->tool5,$player->tool6);
-$setzbwz='';
+$arr = array($player->tool1, $player->tool2, $player->tool3, $player->tool4, $player->tool5, $player->tool6);
+$setzbwz = '';
 $upgj = '';
 $upfy = '';
 $uphp = '';
@@ -16,10 +16,10 @@ $upbj = '';
 $upxx = '';
 $upts = '';
 $qhssum = '';
-$upls = round($zhuangbei->qianghua/2) * round($zhuangbei->qianghua/3) * 2 * (round($zhuangbei->qianghua / 4) )+ 1;
+$upls = round($zhuangbei->qianghua / 2) * round($zhuangbei->qianghua / 3) * 2 * (round($zhuangbei->qianghua / 4)) + 1;
 
-if (isset($canshu)){
-    if ($canshu == "chushou" && !in_array($zhuangbei->zbnowid,$arr) && isset($pay) && $pay > 0){
+if (isset($canshu)) {
+    if ($canshu == "chushou" && !in_array($zhuangbei->zbnowid, $arr) && isset($pay) && $pay > 0) {
         try {
 
             $dblj->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
@@ -28,86 +28,85 @@ if (isset($canshu)){
 
             $sql = "insert into `fangshi_zb`(zbname, zbinfo, zbgj, zbfy, zbbj, zbxx, zbid, uid, zbnowid, sid, zbhp, qianghua, zblv, pay) VALUES ('$zhuangbei->zbname','$zhuangbei->zbinfo','$zhuangbei->zbgj','$zhuangbei->zbfy','$zhuangbei->zbbj','$zhuangbei->zbxx','$zhuangbei->zbid','$player->uid','$zbnowid','$sid','$zhuangbei->zbhp','$zhuangbei->qianghua','$zhuangbei->zblv','$pay')";
             $affected_rows = $dblj->exec($sql);
-            if (!$affected_rows){
-                throw new PDOException("装备挂售失败<br/>");//那个错误抛出异常
+            if (!$affected_rows) {
+                throw new PDOException("装备挂售失败<br/>"); //那个错误抛出异常
             }
-            $sql="UPDATE `playerzhuangbei` SET uid=0,sid='' WHERE zbnowid = $zbnowid";
-            $affected_rows=$dblj->exec($sql);
-            if (!$affected_rows){
-                throw new PDOException("装备传送失败<br/>");//那个错误抛出异常
+            $sql = "UPDATE `playerzhuangbei` SET uid=0,sid='' WHERE zbnowid = $zbnowid";
+            $affected_rows = $dblj->exec($sql);
+            if (!$affected_rows) {
+                throw new PDOException("装备传送失败<br/>"); //那个错误抛出异常
             }
             echo "挂售成功！<br/>";
-            $dblj->commit();//交易成功就提交
-        }catch(PDOException $e){
+            $dblj->commit(); //交易成功就提交
+        } catch (PDOException $e) {
             echo $e->getMessage();
             $dblj->rollBack();
         }
-        $dblj->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);//关闭
-        $zhuangbei = player\getzb($zbnowid,$dblj);
+        $dblj->setAttribute(PDO::ATTR_AUTOCOMMIT, 1); //关闭
+        $zhuangbei = player\getzb($zbnowid, $dblj);
     }
 }
 
 
-if ($player->uid == $zhuangbei->uid){
-    $uyxb = '/'.$player->uyxb;
-    if ($cmd=='upzb'){
-        if ($player->uyxb >=$upls){
-            $ret = \player\upzbsx($zbnowid,$upsx,$sid,$dblj);
-            if ($ret != -1){
-                $retyxb = \player\changeyxb(2,$upls,$sid,$dblj);
-                if ($ret==1){
+if ($player->uid == $zhuangbei->uid) {
+    $uyxb = '/' . $player->uyxb;
+    if ($cmd == 'upzb') {
+        if ($player->uyxb >= $upls) {
+            $ret = \player\upzbsx($zbnowid, $upsx, $sid, $dblj);
+            if ($ret != -1) {
+                $retyxb = \player\changeyxb(2, $upls, $sid, $dblj);
+                if ($ret == 1) {
                     $upts = "恭喜强化成功<br/>";
-                }elseif ($ret==0){
+                } elseif ($ret == 0) {
                     $upts = "强化失败，请攒积人品<br/>";
                 }
-                $zhuangbei = \player\getzb($zbnowid,$dblj);
-
-            }else{
+                $zhuangbei = \player\getzb($zbnowid, $dblj);
+            } else {
                 $upts = "强化失败，强化石不足<br/>";
             }
-        }else{
+        } else {
             $upts = "强化失败，灵石不足<br/>";
         }
     }
     $upgj = $encode->encode("cmd=upzb&upsx=zbgj&zbnowid=$zhuangbei->zbnowid&sid=$sid");
     $upfy = $encode->encode("cmd=upzb&upsx=zbfy&zbnowid=$zhuangbei->zbnowid&sid=$sid");
     $uphp = $encode->encode("cmd=upzb&upsx=zbhp&zbnowid=$zhuangbei->zbnowid&sid=$sid");
-//    $upbj = $encode->encode("cmd=upzb&upsx=zbbj&zbnowid=$zhuangbei->zbnowid&sid=$sid");
-//    $upxx = $encode->encode("cmd=upzb&upsx=zbxx&zbnowid=$zhuangbei->zbnowid&sid=$sid");
-    $daoju = player\getplayerdaoju($sid,1,$dblj);
+    //    $upbj = $encode->encode("cmd=upzb&upsx=zbbj&zbnowid=$zhuangbei->zbnowid&sid=$sid");
+    //    $upxx = $encode->encode("cmd=upzb&upsx=zbxx&zbnowid=$zhuangbei->zbnowid&sid=$sid");
+    $daoju = player\getplayerdaoju($sid, 1, $dblj);
     $qhssum = '/0';
-    if ($daoju){
-        $qhssum = '/'.$daoju->djsum;
+    if ($daoju) {
+        $qhssum = '/' . $daoju->djsum;
     }
 
-    $upgj =<<<HTML
+    $upgj = <<<HTML
     <a href="?cmd=$upgj">强化攻击</a>
 HTML;
-    $upfy =<<<HTML
+    $upfy = <<<HTML
     <a href="?cmd=$upfy">强化防御</a>
 HTML;
-    $uphp =<<<HTML
+    $uphp = <<<HTML
     <a href="?cmd=$uphp">强化气血</a>
 HTML;
-    $upbj =<<<HTML
+    $upbj = <<<HTML
     <a href="?cmd=$upbj">强化暴击</a>
 HTML;
-    $upxx =<<<HTML
+    $upxx = <<<HTML
     <a href="?cmd=$upxx">强化吸血</a>
 HTML;
-}else{
-    $uyxb='';
+} else {
+    $uyxb = '';
 }
 
-if ($player->uid == $zhuangbei->uid && !in_array($zhuangbei->zbnowid,$arr)){
+if ($player->uid == $zhuangbei->uid && !in_array($zhuangbei->zbnowid, $arr)) {
 
-    $player = \player\getplayer($sid,$dblj);
+    $player = \player\getplayer($sid, $dblj);
     $delezb = $encode->encode("cmd=delezb&zbnowid=$zhuangbei->zbnowid&sid=$sid");
     $self = $_SERVER['PHP_SELF'];
     $setzbwz = $encode->encode("cmd=setzbwz&zbwz={$zhuangbei->tool}&zbnowid=$zhuangbei->zbnowid&sid=$sid");
     $setzbwz = "<a href='?cmd=$setzbwz'>穿戴装备</a><br/>";
 
-    if ($zhuangbei->tool == 0){
+    if ($zhuangbei->tool == 0) {
         $setzbwz1 = $encode->encode("cmd=setzbwz&zbwz=1&zbnowid=$zhuangbei->zbnowid&sid=$sid");
         $setzbwz2 = $encode->encode("cmd=setzbwz&zbwz=2&zbnowid=$zhuangbei->zbnowid&sid=$sid");
         $setzbwz3 = $encode->encode("cmd=setzbwz&zbwz=3&zbnowid=$zhuangbei->zbnowid&sid=$sid");
@@ -124,7 +123,7 @@ if ($player->uid == $zhuangbei->uid && !in_array($zhuangbei->zbnowid,$arr)){
     <a href='?cmd=$setzbwz6'>装备在【鞋子】位置</a><br/>";
     }
 
-    $setzbwz .=<<<HTML
+    $setzbwz .= <<<HTML
     <br/>
     <a href="?cmd=$delezb">分解该装备</a>
     <br/>
@@ -140,16 +139,16 @@ if ($player->uid == $zhuangbei->uid && !in_array($zhuangbei->zbnowid,$arr)){
 HTML;
 }
 $updjsl = $zhuangbei->qianghua * 3 + 1;
-$upls = round($zhuangbei->qianghua/2) * round($zhuangbei->qianghua/3) * 2 * (round($zhuangbei->qianghua / 4) )+ 1;
+$upls = round($zhuangbei->qianghua / 2) * round($zhuangbei->qianghua / 3) * 2 * (round($zhuangbei->qianghua / 4)) + 1;
 $fjls = $zhuangbei->qianghua * 20 + 20;
 $qianghua = '';
-if ($zhuangbei->qianghua>0){
-    $qianghua="+".$zhuangbei->qianghua;
+if ($zhuangbei->qianghua > 0) {
+    $qianghua = "+" . $zhuangbei->qianghua;
 }
 
-$qhcgl = round((30-$zhuangbei->qianghua)/30,2) * 100;
-$qhcgl .='%';
-$tools = array("不限定","武器","头饰","衣服","腰带","首饰","鞋子");
+$qhcgl = round((30 - $zhuangbei->qianghua) / 30, 2) * 100;
+$qhcgl .= '%';
+$tools = array("不限定", "武器", "头饰", "衣服", "腰带", "首饰", "鞋子");
 $tool = $tools[$zhuangbei->tool];
 
 
@@ -174,4 +173,3 @@ $setzbwz
 <a href="?cmd=$gonowmid">返回游戏</a>
 HTML;
 echo $html;
-?>

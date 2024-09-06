@@ -1,7 +1,7 @@
 <?php
-$boss = \player\getboss($bossid,$dblj);
-$player = \player\getplayer($sid,$dblj);
-$nowmid=$player->nowmid;
+$boss = \player\getboss($bossid, $dblj);
+$player = \player\getplayer($sid, $dblj);
+$nowmid = $player->nowmid;
 $pgjcmd = $encode->encode("cmd=pvb&canshu=ptgj&bossid=$bossid&sid=$sid");
 $gonowmid = $encode->encode("cmd=gomid&newmid=$player->nowmid&sid=$player->sid");
 $useyp1 = $encode->encode("cmd=pve&canshu=useyp&ypid=$player->yp1&sid=$sid&gid=$bossid&nowmid=$nowmid");
@@ -10,20 +10,20 @@ $useyp3 = $encode->encode("cmd=pve&canshu=useyp&ypid=$player->yp3&sid=$sid&gid=$
 $ypname1 = '药品1';
 $ypname2 = '药品2';
 $ypname3 = '药品3';
-if ($player->yp1!=0){
-    $yaopin = \player\getplayeryaopin($player->yp1,$sid,$dblj);
-    $ypname1 = $yaopin->ypname.'('.$yaopin->ypsum.')';
+if ($player->yp1 != 0) {
+    $yaopin = \player\getplayeryaopin($player->yp1, $sid, $dblj);
+    $ypname1 = $yaopin->ypname . '(' . $yaopin->ypsum . ')';
 }
-if ($player->yp2!=0){
-    $yaopin = \player\getplayeryaopin($player->yp2,$sid,$dblj);
-    $ypname2 = $yaopin->ypname.'('.$yaopin->ypsum.')';
+if ($player->yp2 != 0) {
+    $yaopin = \player\getplayeryaopin($player->yp2, $sid, $dblj);
+    $ypname2 = $yaopin->ypname . '(' . $yaopin->ypsum . ')';
 }
-if ($player->yp3!=0){
-    $yaopin = \player\getplayeryaopin($player->yp3,$sid,$dblj);
-    $ypname3 = $yaopin->ypname.'('.$yaopin->ypsum.')';
+if ($player->yp3 != 0) {
+    $yaopin = \player\getplayeryaopin($player->yp3, $sid, $dblj);
+    $ypname3 = $yaopin->ypname . '(' . $yaopin->ypsum . ')';
 }
 
-$bosshtml=<<<HTML
+$bosshtml = <<<HTML
 当前攻击人数:<br/><br/>
 $boss->bossname[lv:$boss->bosslv]<br/>
 气血:($boss->bosshp)<br/>
@@ -40,4 +40,3 @@ $player->uname[lv:$player->ulv]<br/>
 
 HTML;
 echo $bosshtml
-?>
