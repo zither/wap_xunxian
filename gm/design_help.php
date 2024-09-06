@@ -290,4 +290,3 @@ gphn属性说明：{gphn.武力榜.0.id}:表示武力榜的第1个玩家id，{gp
 <a href="?cmd=$gm_main">返回设计大厅</a>
 HTML;
 echo nl2br($html);
-?>

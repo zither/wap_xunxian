@@ -4,7 +4,7 @@ $skills_post = $encode->encode("cmd=gm_type_npc&gm_post_canshu=5&skill_add_id=$s
 $skills_count = 1;
 $skills_count = htmlspecialchars($skills_count, ENT_QUOTES, 'UTF-8');
 
-$gm_html =<<<HTML
+$gm_html = <<<HTML
 <p>设置[{$skill_name}]技能等级<br/>
 </p>
 <form action="?cmd=$skills_post" method="post">
@@ -13,4 +13,3 @@ $gm_html =<<<HTML
 <a href="?cmd=$gm_npc_skills_last">返回上级</a><br/>
 HTML;
 echo $gm_html;
-?>

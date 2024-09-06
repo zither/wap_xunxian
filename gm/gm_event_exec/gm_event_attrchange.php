@@ -1,84 +1,83 @@
 <?php
 
-if(!empty($_POST)){
-$old_key=$_POST['old_key'];
-$old_value=$_POST['old_value'];
-$key=$_POST['key'];
-$value=$_POST['value'];
-$step_belong_id=$_POST['step_belong_id'];
-$step_id=$_POST['step_id'];
-$string_old = $old_key."=".$old_value;
-$string_new = $key."=".$value;
+if (!empty($_POST)) {
+    $old_key = $_POST['old_key'];
+    $old_value = $_POST['old_value'];
+    $key = $_POST['key'];
+    $value = $_POST['value'];
+    $step_belong_id = $_POST['step_belong_id'];
+    $step_id = $_POST['step_id'];
+    $string_old = $old_key . "=" . $old_value;
+    $string_new = $key . "=" . $value;
 }
-if(!empty($old_key) && !empty($key)){
-// 准备 SQL 查询语句，使用占位符代替变量
-$query = "UPDATE system_event_evs SET m_attrs = REPLACE(m_attrs, :old_value, :new_value) WHERE belong = :belong AND id = :id";
-// 准备并执行预处理语句
-$stmt = $dblj->prepare($query);
-// 绑定参数值
-$stmt->bindParam(':old_value', $string_old);
-$stmt->bindParam(':new_value', $string_new);
-$stmt->bindParam(':belong', $step_belong_id);
-$stmt->bindParam(':id', $step_id);
-// 执行查询
-$stmt->execute();
-}elseif(empty($old_key) && !empty($key)){
-// 检查 m_attrs 字段是否为空
-$query = "SELECT m_attrs FROM system_event_evs where belong = '$step_belong_id' and id = '$step_id'";
-$stmt = $dblj->prepare($query);
-$stmt->execute();
-$result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (empty($result['m_attrs'])) {
-    // m_attrs 字段为空，直接赋值为 $string_new
-    $query = "UPDATE system_event_evs SET m_attrs = :new_value where belong = '$step_belong_id' and id = '$step_id'";
+if (!empty($old_key) && !empty($key)) {
+    // 准备 SQL 查询语句，使用占位符代替变量
+    $query = "UPDATE system_event_evs SET m_attrs = REPLACE(m_attrs, :old_value, :new_value) WHERE belong = :belong AND id = :id";
+    // 准备并执行预处理语句
     $stmt = $dblj->prepare($query);
-    $stmt->bindValue(':new_value', $string_new);
+    // 绑定参数值
+    $stmt->bindParam(':old_value', $string_old);
+    $stmt->bindParam(':new_value', $string_new);
+    $stmt->bindParam(':belong', $step_belong_id);
+    $stmt->bindParam(':id', $step_id);
+    // 执行查询
     $stmt->execute();
-} else {
-    // m_attrs 字段不为空，在原有值后面加上逗号和 $string_new
-    $query = "UPDATE system_event_evs SET m_attrs = CONCAT(m_attrs, ',', :new_value) where belong = '$step_belong_id' and id = '$step_id'";
+} elseif (empty($old_key) && !empty($key)) {
+    // 检查 m_attrs 字段是否为空
+    $query = "SELECT m_attrs FROM system_event_evs where belong = '$step_belong_id' and id = '$step_id'";
     $stmt = $dblj->prepare($query);
-    $stmt->bindValue(':new_value', $string_new);
     $stmt->execute();
-}
-}
-elseif(!empty($old_key) && $key ==0){
-// 准备 SQL 查询语句
-$query = "SELECT m_attrs FROM system_event_evs WHERE belong = '$step_belong_id' and id = '$step_id'";
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// 执行查询
-$result = $dblj->query($query);
+    if (empty($result['m_attrs'])) {
+        // m_attrs 字段为空，直接赋值为 $string_new
+        $query = "UPDATE system_event_evs SET m_attrs = :new_value where belong = '$step_belong_id' and id = '$step_id'";
+        $stmt = $dblj->prepare($query);
+        $stmt->bindValue(':new_value', $string_new);
+        $stmt->execute();
+    } else {
+        // m_attrs 字段不为空，在原有值后面加上逗号和 $string_new
+        $query = "UPDATE system_event_evs SET m_attrs = CONCAT(m_attrs, ',', :new_value) where belong = '$step_belong_id' and id = '$step_id'";
+        $stmt = $dblj->prepare($query);
+        $stmt->bindValue(':new_value', $string_new);
+        $stmt->execute();
+    }
+} elseif (!empty($old_key) && $key == 0) {
+    // 准备 SQL 查询语句
+    $query = "SELECT m_attrs FROM system_event_evs WHERE belong = '$step_belong_id' and id = '$step_id'";
 
-// 获取结果
-if ($result) {
-    $row = $result->fetch(PDO::FETCH_ASSOC);
-    $m_attrs = $row['m_attrs'];
-} else {
-    echo "查询失败";
-}
-$elements = explode(",", $m_attrs);
-$index = array_search($string_old, $elements);
-if ($index !== false) {
-    unset($elements[$index]);
-}
-$newString = implode(",", $elements);
+    // 执行查询
+    $result = $dblj->query($query);
 
-            // 准备 SQL 更新语句，使用占位符代替变量
-$query = "UPDATE system_event_evs SET m_attrs = :newstring WHERE belong = '$step_belong_id' and id = '$step_id'";
+    // 获取结果
+    if ($result) {
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        $m_attrs = $row['m_attrs'];
+    } else {
+        echo "查询失败";
+    }
+    $elements = explode(",", $m_attrs);
+    $index = array_search($string_old, $elements);
+    if ($index !== false) {
+        unset($elements[$index]);
+    }
+    $newString = implode(",", $elements);
 
-// 准备并执行预处理语句
-$stmt = $dblj->prepare($query);
+    // 准备 SQL 更新语句，使用占位符代替变量
+    $query = "UPDATE system_event_evs SET m_attrs = :newstring WHERE belong = '$step_belong_id' and id = '$step_id'";
 
-// 绑定参数值
-$stmt->bindParam(':newstring', $newString);
+    // 准备并执行预处理语句
+    $stmt = $dblj->prepare($query);
 
-// 执行更新
-if ($stmt->execute()) {
-    echo "更新成功";
-} else {
-    echo "更新失败";
-}
+    // 绑定参数值
+    $stmt->bindParam(':newstring', $newString);
+
+    // 执行更新
+    if ($stmt->execute()) {
+        echo "更新成功";
+    } else {
+        echo "更新失败";
+    }
 }
 
 // 假设你已经连接到数据库并获取了数据
@@ -101,7 +100,7 @@ foreach ($rows as $row) {
         $value = urlencode($value);
         $index_attr = $encode->encode("cmd=game_event_attrchange_2&step_belong_id=$step_belong_id&step_id=$step_id&attr_key=$key&attr_value=$value&sid=$sid");
         $index_attr_add = $encode->encode("cmd=game_event_attradd&step_belong_id=$step_belong_id&step_id=$step_id&post_type=1&sid=$sid");
-        $attr_html .=<<<HTML
+        $attr_html .= <<<HTML
         <a href="?cmd=$index_attr">$attr</a><br/>
 HTML;
     }
@@ -109,7 +108,7 @@ HTML;
 
 // 关闭数据库连接等清理操作
 
-$gm_html =<<<HTML
+$gm_html = <<<HTML
 <p>定义事件步骤的更改属性<br/>
 $attr_html
 <a href="?cmd=$index_attr_add">增加属性</a><br/>
@@ -117,4 +116,3 @@ $attr_html
 </p>
 HTML;
 echo $gm_html;
-?>

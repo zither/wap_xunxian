@@ -12,61 +12,61 @@ if (file_exists($css_file_path)) {
     // 读取文件内容并赋值给变量
     $gm_css_text = htmlspecialchars(file_get_contents($css_file_path));
 }
-if(!empty($_POST)){
-foreach ($_POST as $key => $value) {
-    switch ($key) {
-        case 'offline_time':
-            $sql = "update  gm_game_basic set player_offline_time = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'player_send_global_msg_interval':
-            $sql = "update  gm_game_basic set player_send_global_msg_interval = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'near_player_show':
-            $sql = "update  gm_game_basic set near_player_show = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'scene_op_br':
-            $sql = "update  gm_game_basic set scene_op_br = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'npc_op_br':
-            $sql = "update  gm_game_basic set npc_op_br = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'item_op_br':
-            $sql = "update  gm_game_basic set item_op_br = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'list_row':
-            $sql = "update  gm_game_basic set list_row = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'game_max_char':
-            $sql = "update  gm_game_basic set game_max_char = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'default_storage':
-            $sql = "update  gm_game_basic set default_storage = '$value' where game_id = 19980925";
-            $dblj->exec($sql);
-            break;
-        case 'gm_css_text':
-            // 获取提交的CSS内容
-            $gm_css_text = $_POST['gm_css_text'] ?? '';
-            // 写入文件
-            if (file_put_contents($css_file_path, $gm_css_text) !== false) {
-                $message = "CSS文件已成功更新。";
-            } else {
-                $message = "更新CSS文件时出错。";
-            }
-            
-            if (file_exists($css_file_path)) {
-                // 读取文件内容并赋值给变量
-                $gm_css_text = file_get_contents($css_file_path);
-            }
-            break;
-    }
+if (!empty($_POST)) {
+    foreach ($_POST as $key => $value) {
+        switch ($key) {
+            case 'offline_time':
+                $sql = "update  gm_game_basic set player_offline_time = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'player_send_global_msg_interval':
+                $sql = "update  gm_game_basic set player_send_global_msg_interval = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'near_player_show':
+                $sql = "update  gm_game_basic set near_player_show = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'scene_op_br':
+                $sql = "update  gm_game_basic set scene_op_br = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'npc_op_br':
+                $sql = "update  gm_game_basic set npc_op_br = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'item_op_br':
+                $sql = "update  gm_game_basic set item_op_br = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'list_row':
+                $sql = "update  gm_game_basic set list_row = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'game_max_char':
+                $sql = "update  gm_game_basic set game_max_char = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'default_storage':
+                $sql = "update  gm_game_basic set default_storage = '$value' where game_id = 19980925";
+                $dblj->exec($sql);
+                break;
+            case 'gm_css_text':
+                // 获取提交的CSS内容
+                $gm_css_text = $_POST['gm_css_text'] ?? '';
+                // 写入文件
+                if (file_put_contents($css_file_path, $gm_css_text) !== false) {
+                    $message = "CSS文件已成功更新。";
+                } else {
+                    $message = "更新CSS文件时出错。";
+                }
+
+                if (file_exists($css_file_path)) {
+                    // 读取文件内容并赋值给变量
+                    $gm_css_text = file_get_contents($css_file_path);
+                }
+                break;
+        }
     }
 }
 
@@ -121,4 +121,3 @@ css样式编写:<br/>
 <a href="?cmd=$gm_main">设计大厅</a><br/>
 HTML;
 echo $other_html;
-?>

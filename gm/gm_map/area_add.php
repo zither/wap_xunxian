@@ -40,4 +40,3 @@ $area_html = <<<HTML
 <a href="?cmd=$gm">返回设计大厅</a><br/>
 HTML;
 echo $area_html;
-?>

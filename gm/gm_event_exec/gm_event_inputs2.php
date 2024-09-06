@@ -2,9 +2,9 @@
 $gm_game_globaleventdefine_input_last = $encode->encode("cmd=game_event_inputs&step_belong_id=$step_belong_id&step_id=$step_id&sid=$sid");
 $input_post = $encode->encode("cmd=game_event_inputs&step_belong_id=$step_belong_id&step_id=$step_id&sid=$sid");
 //$attr_value_2 = htmlspecialchars($attr_value, ENT_QUOTES, 'UTF-8');
-$selected = $inputs_type == 1?"selected":"";
-$inputs_max_len = $inputs_max_len ? $inputs_max_len :10;
-$input_html =<<<HTML
+$selected = $inputs_type == 1 ? "selected" : "";
+$inputs_max_len = $inputs_max_len ? $inputs_max_len : 10;
+$input_html = <<<HTML
 <form action="?cmd=$input_post" method="post">
 <input type="hidden" name="step_belong_id" value="$step_belong_id">
 <input type="hidden" name="step_id" value="$step_id">
@@ -23,4 +23,3 @@ $input_html =<<<HTML
 <a href="?cmd=$gm_game_globaleventdefine_input_last">返回字段列表</a><br/>
 HTML;
 echo $input_html;
-?>

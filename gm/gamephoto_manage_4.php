@@ -26,5 +26,3 @@ $select
 <a href="?cmd=$gm_main">返回设计大厅</a><br/>
 HTML;
 echo $upload_html;
-
-?>

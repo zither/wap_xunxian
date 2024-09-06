@@ -9,8 +9,8 @@ $name = $row['name'];
 $type = $row['type'];
 $format_type = $row['format_type'];
 $image_style = $row['photo_style'];
-$image_url = "$type"."-"."$id"."-"."$name".".$format_type";
-$imageSrc = "images/"."$type"."/".$image_url;
+$image_url = "$type" . "-" . "$id" . "-" . "$name" . ".$format_type";
+$imageSrc = "images/" . "$type" . "/" . $image_url;
 
 $select = '图片类别:<select name="type">';
 foreach ($gm_photo_type_list as $gm_photo_type) {
@@ -45,5 +45,3 @@ $select
 <a href="?cmd=$gm_main">返回设计大厅</a><br/>
 HTML;
 echo $upload_html;
-
-?>

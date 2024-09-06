@@ -1,6 +1,6 @@
 <?php
 
-if($_POST &&$add ==0){
+if ($_POST && $add == 0) {
     $gm_event_cmmt = htmlspecialchars($cmmt);
     $gm_event_cmmt_2 = htmlspecialchars($cmmt2);
     $sql = "UPDATE system_event_evs SET cond = '$cond', exec_cond = '$exec_cond',
@@ -10,9 +10,9 @@ if($_POST &&$add ==0){
     $cxjg = $dblj->exec($sql);
     echo "修改成功!<br/>";
 }
-if($add ==1){
+if ($add == 1) {
     $sql = "INSERT INTO system_event_evs set id = '$step_id',belong = '$step_belong_id';";
-    $cxjg =$dblj->exec($sql);
+    $cxjg = $dblj->exec($sql);
     $sql = "SELECT link_evs FROM system_event WHERE `id` = '$step_belong_id'";
     $stmt = $dblj->query($sql);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -23,7 +23,7 @@ if($add ==1){
         $link_evs .= ',' . $step_id;
     }
     $sql = "UPDATE system_event SET link_evs = '$link_evs' WHERE `id` = '$step_belong_id'";
-    $cxjg =$dblj->exec($sql);
+    $cxjg = $dblj->exec($sql);
     $add = 0;
 }
 
@@ -49,7 +49,7 @@ $stmt->execute();
 
 // 获取结果
 $rows = $stmt->fetch(PDO::FETCH_ASSOC);
-if($rows) {
+if ($rows) {
     $event_belong = $rows['belong'];
     $event_id = $rows['id'];
     $event_cond = $rows['cond'];
@@ -62,71 +62,71 @@ if($rows) {
     $event_r_adopt = $rows['r_adopt'];
     $s_attrs_count = 0;
     if (!empty($rows['s_attrs'])) {
-    $s_attrs_count = explode(',', $rows['s_attrs']);
-    $s_attrs_count = count($s_attrs_count);
-}
+        $s_attrs_count = explode(',', $rows['s_attrs']);
+        $s_attrs_count = count($s_attrs_count);
+    }
 
     $m_attrs_count = 0;
     if (!empty($rows['m_attrs'])) {
-    $m_attrs_count = explode(',', $rows['m_attrs']);
-    $m_attrs_count = count($m_attrs_count);
-}
+        $m_attrs_count = explode(',', $rows['m_attrs']);
+        $m_attrs_count = count($m_attrs_count);
+    }
 
     $items_count = 0;
     if (!empty($rows['items'])) {
-    $items_count = explode(',', $rows['items']);
-    $items_count = count($items_count);
-}
+        $items_count = explode(',', $rows['items']);
+        $items_count = count($items_count);
+    }
 
     $a_skills_count = 0;
     if (!empty($rows['a_skills'])) {
-    $a_skills_count = explode(',', $rows['a_skills']);
-    $a_skills_count = count($a_skills_count);
-}
+        $a_skills_count = explode(',', $rows['a_skills']);
+        $a_skills_count = count($a_skills_count);
+    }
 
     $r_skills_count = 0;
     if (!empty($rows['r_skills'])) {
-    $r_skills_count = explode(',', $rows['r_skills']);
-    $r_skills_count = count($r_skills_count);
-}
+        $r_skills_count = explode(',', $rows['r_skills']);
+        $r_skills_count = count($r_skills_count);
+    }
 
     $r_tasks_count = 0;
     if (!empty($row['r_tasks'])) {
-    $r_tasks_count = explode(',', $row['r_tasks']);
-    $r_tasks_count = count($r_tasks_count);
-}
+        $r_tasks_count = explode(',', $row['r_tasks']);
+        $r_tasks_count = count($r_tasks_count);
+    }
 
     $dests_count = 0;
     if (!empty($rows['dests'])) {
-    $dests_count = explode(',', $rows['dests']);
-    $dests_count = count($dests_count);
-}
+        $dests_count = explode(',', $rows['dests']);
+        $dests_count = count($dests_count);
+    }
 
     $inputs_count = 0;
     if (!empty($rows['inputs'])) {
-    $inputs_count = explode(',', $rows['inputs']);
-    $inputs_count = count($inputs_count);
-}
+        $inputs_count = explode(',', $rows['inputs']);
+        $inputs_count = count($inputs_count);
+    }
 
     $a_adopt_count = 0;
     if (!empty($rows['a_adopt'])) {
-    $a_adopt_count = explode(',', $rows['a_adopt']);
-    $a_adopt_count = count($a_adopt_count);
-}
+        $a_adopt_count = explode(',', $rows['a_adopt']);
+        $a_adopt_count = count($a_adopt_count);
+    }
 
     $r_adopt_count = 0;
     if (!empty($rows['r_adopt'])) {
-    $r_adopt_count = explode(',', $rows['r_adopt']);
-    $r_adopt_count = count($r_adopt_count);
-}
+        $r_adopt_count = explode(',', $rows['r_adopt']);
+        $r_adopt_count = count($r_adopt_count);
+    }
 
 
     $event_view_user_exp = $rows['view_user_exp'];
     $event_page_name = $rows['page_name'];
     $event_refresh_scene_npcs = $rows['refresh_scene_npcs'];
     $event_refresh_scene_items = $rows['refresh_scene_items'];
-    $gm_select_1 = $event_not_return_link ==1?"selected":"";
-    $gm_select_2 = $event_just_return ==1?"selected":"";
+    $gm_select_1 = $event_not_return_link == 1 ? "selected" : "";
+    $gm_select_2 = $event_just_return == 1 ? "selected" : "";
 }
 
 
@@ -141,7 +141,7 @@ $gm_game_globaleventdefine_inputs = $encode->encode("cmd=game_event_inputs&step_
 $gm_game_globaleventdefine_petadd = $encode->encode("cmd=game_event_pet&step_belong_id=$event_belong&step_id=$event_id&sid=$sid");
 
 
-$gm_html =<<<HTML
+$gm_html = <<<HTML
 <script type="text/javascript" src="js/auto_insert.js"></script>
 <p>定义事件[id:{$step_belong_id}]的步骤{$step_index}<br/>
 </p>
@@ -181,5 +181,3 @@ $gm_html =<<<HTML
 <button onclick = "window.location.assign('?cmd=$gm_main')">返回上一级</button><br/>
 HTML;
 echo $gm_html;
-
-?>

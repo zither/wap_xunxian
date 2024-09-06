@@ -1,13 +1,13 @@
 <?php
-$player = \player\getplayer($sid,$dblj);
+$player = \player\getplayer($sid, $dblj);
 $gm_post = \gm\gm_post($dblj);
 
-if($post_canshu =='map'){
+if ($post_canshu == 'map') {
     $sql = "UPDATE gm_game_basic SET entrance_id = '$target_mid'";
-    $cxjg =$dblj->exec($sql);
+    $cxjg = $dblj->exec($sql);
 }
 
-if($post_canshu =='skill'){
+if ($post_canshu == 'skill') {
     $sql = "update gm_game_basic set default_skill_id = '$skill_id'";
     $dblj->exec($sql);
 }
@@ -16,19 +16,19 @@ $gameconfig = \player\getgameconfig($dblj);
 
 $default_skill_id = $gameconfig->default_skill_id;
 
-if($default_skill_id ==0){
+if ($default_skill_id == 0) {
     $default_skill_total = "选择";
-}else{
-    $default_skill = \player\getskill($default_skill_id,$dblj);
+} else {
+    $default_skill = \player\getskill($default_skill_id, $dblj);
     $default_skill_total = "{$default_skill->jname}(ID:j{$default_skill_id})";
 }
 
 $default_mid_id = $gameconfig->entrance_id;
 
-if($default_mid_id ==0){
+if ($default_mid_id == 0) {
     $default_mid_total = "选择";
-}else{
-    $default_mid = \player\getmid($default_mid_id,$dblj);
+} else {
+    $default_mid = \player\getmid($default_mid_id, $dblj);
     $default_mid_total = "{$default_mid->mname}(ID:s{$default_mid_id})";
 }
 
@@ -36,13 +36,13 @@ $gm = $encode->encode("cmd=gm&sid=$sid");
 $gm_skill_cmd = $encode->encode("cmd=gm_skill&sid=$sid");
 $gm_map_cmd = $encode->encode("cmd=gm_map&sid=$sid");
 $game_post = $encode->encode("cmd=gm_post_1&sid=$sid");
-if($gm_post->game_status=="0"){
+if ($gm_post->game_status == "0") {
     $gm_select_0 = "selected";
-}elseif ($gm_post->game_status=="1") {
+} elseif ($gm_post->game_status == "1") {
     $gm_select_1 = "selected";
-}elseif ($gm_post->game_status=="2") {
-    $gm_select_2= "selected";
-}elseif ($gm_post->game_status=="3") {
+} elseif ($gm_post->game_status == "2") {
+    $gm_select_2 = "selected";
+} elseif ($gm_post->game_status == "3") {
     $gm_select_3 = "selected";
 }
 
@@ -78,4 +78,3 @@ $post_tishi
 <a href="?cmd=$gm">返回设计大厅</a>
 HTML;
 echo $gm_html;
-?>

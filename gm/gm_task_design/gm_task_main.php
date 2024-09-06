@@ -1,56 +1,56 @@
-<p>[任务定义]<br/>
-<?php
-try {
-    // 获取POST表单数据
-    if ($_SERVER["REQUEST_METHOD"] == "POST" &&$_POST['id'] !='') {
-        $id = $_POST["id"];
-        $setClause = '';
-        $updateParams = array();
+<p>[任务定义]<br />
+    <?php
+    try {
+        // 获取POST表单数据
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['id'] != '') {
+            $id = $_POST["id"];
+            $setClause = '';
+            $updateParams = array();
 
-        // 遍历POST表单字段，构建SET部分和参数
-        foreach ($_POST as $key => $value) {
-            // 构建数据表字段名
-            $tableFieldName = "t" . $key; // 表单字段名加上"j"前缀
-            // 构建SET部分
-            $setClause .= "$tableFieldName=?, ";
-            // 构建参数数组
-            $updateParams[] = $value;
+            // 遍历POST表单字段，构建SET部分和参数
+            foreach ($_POST as $key => $value) {
+                // 构建数据表字段名
+                $tableFieldName = "t" . $key; // 表单字段名加上"j"前缀
+                // 构建SET部分
+                $setClause .= "$tableFieldName=?, ";
+                // 构建参数数组
+                $updateParams[] = $value;
+            }
+
+            // 去除SET部分末尾多余的逗号和空格
+            $setClause = rtrim($setClause, ', ');
+
+            // 构建完整的UPDATE SQL语句
+            $sql = "UPDATE system_task SET $setClause WHERE tid=?";
+            // 使用预处理语句
+            $stmt = $dblj->prepare($sql);
+
+            // 绑定参数
+            $updateParams[] = $id;
+            $stmt->execute($updateParams);
+
+            echo "修改成功!<br/>";
         }
-
-        // 去除SET部分末尾多余的逗号和空格
-        $setClause = rtrim($setClause, ', ');
-
-        // 构建完整的UPDATE SQL语句
-        $sql = "UPDATE system_task SET $setClause WHERE tid=?";
-        // 使用预处理语句
-        $stmt = $dblj->prepare($sql);
-
-        // 绑定参数
-        $updateParams[] = $id;
-        $stmt->execute($updateParams);
-
-        echo "修改成功!<br/>";
+    } catch (PDOException $e) {
+        echo "连接失败: " . $e->getMessage();
     }
-} catch (PDOException $e) {
-    echo "连接失败: " . $e->getMessage();
-}
 
-$gm = $encode->encode("cmd=gm&sid=$sid");
-$last_page = $encode->encode("cmd=gm_game_taskdesign&gm_post_canshu=$task_type&sid=$sid");
-$sql = "select * from system_task where tid = '$task_id'";
-$task_post_canshu = 0;
-$gm_cxjg = $dblj->query($sql);
-if ($gm_cxjg){
-    $gm_ret = $gm_cxjg->fetch(PDO::FETCH_ASSOC);
-    $task_id = $gm_ret['tid'];
-    $task_belong = $gm_ret['tbelong'];
-    $task_name = $gm_ret['tname'];
-    $task_cond = $gm_ret['tcond'];
-    $task_accept_cond = $gm_ret['taccept_cond'];
-    $task_cmmt1 = $gm_ret['tcmmt1'];
-    $task_cmmt2 = $gm_ret['tcmmt2'];
-}
-$task_html = <<<HTML
+    $gm = $encode->encode("cmd=gm&sid=$sid");
+    $last_page = $encode->encode("cmd=gm_game_taskdesign&gm_post_canshu=$task_type&sid=$sid");
+    $sql = "select * from system_task where tid = '$task_id'";
+    $task_post_canshu = 0;
+    $gm_cxjg = $dblj->query($sql);
+    if ($gm_cxjg) {
+        $gm_ret = $gm_cxjg->fetch(PDO::FETCH_ASSOC);
+        $task_id = $gm_ret['tid'];
+        $task_belong = $gm_ret['tbelong'];
+        $task_name = $gm_ret['tname'];
+        $task_cond = $gm_ret['tcond'];
+        $task_accept_cond = $gm_ret['taccept_cond'];
+        $task_cmmt1 = $gm_ret['tcmmt1'];
+        $task_cmmt2 = $gm_ret['tcmmt2'];
+    }
+    $task_html = <<<HTML
 </p>
 <form method="post">
 任务标识:t{$task_id}<br/>
@@ -65,5 +65,5 @@ $task_html = <<<HTML
 <a href="?cmd=$last_page">返回上级</a><br/>
 <a href="?cmd=$gm">返回设计大厅</a><br/>
 HTML;
-echo $task_html;
-?>
+    echo $task_html;
+    ?>

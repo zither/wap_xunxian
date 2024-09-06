@@ -1,10 +1,10 @@
 <?php
 
 
-if($equip_type ==1){
-$gm = $encode->encode("cmd=gm&sid=$sid");
-$equip_main = $encode->encode("cmd=gm_equip_def&def_post_canshu=3&gm_post_canshu=1&sid=$sid");
-$equip_html = <<<HTML
+if ($equip_type == 1) {
+    $gm = $encode->encode("cmd=gm&sid=$sid");
+    $equip_main = $encode->encode("cmd=gm_equip_def&def_post_canshu=3&gm_post_canshu=1&sid=$sid");
+    $equip_html = <<<HTML
 <p>[装备类型定义]<br/>
 增加兵器类别<br/>
 </p>
@@ -14,10 +14,10 @@ $equip_html = <<<HTML
 <button onClick="javascript:history.back(-1);">返回上级</button><br/>
 <a href="?cmd=$gm">返回设计大厅</a><br/>
 HTML;
-}elseif ($equip_type ==2) {
-$gm = $encode->encode("cmd=gm&sid=$sid");
-$equip_main = $encode->encode("cmd=gm_equip_def&def_post_canshu=3&gm_post_canshu=2&sid=$sid");
-$equip_html = <<<HTML
+} elseif ($equip_type == 2) {
+    $gm = $encode->encode("cmd=gm&sid=$sid");
+    $equip_main = $encode->encode("cmd=gm_equip_def&def_post_canshu=3&gm_post_canshu=2&sid=$sid");
+    $equip_html = <<<HTML
 <p>[装备类型定义]<br/>
 增加防具类别<br/>
 </p>
@@ -29,4 +29,3 @@ $equip_html = <<<HTML
 HTML;
 }
 echo $equip_html;
-?>

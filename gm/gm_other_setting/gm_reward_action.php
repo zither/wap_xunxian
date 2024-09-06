@@ -286,4 +286,3 @@ $reward_action = <<<HTML
 <a href="?cmd=$gobackgame">返回游戏</a><br/>
 HTML;
 echo $reward_action;
-?>

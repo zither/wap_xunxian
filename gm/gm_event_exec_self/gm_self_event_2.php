@@ -1,13 +1,13 @@
 <?php
 
-if($_POST){
-$sql = "UPDATE system_event_self SET cond = :cond, cmmt = :cmmt WHERE `id` = :id";
-$stmt = $dblj->prepare($sql);
-$stmt->bindParam(':cond', $cond);
-$stmt->bindParam(':cmmt', $cmmt);
-$stmt->bindParam(':id', $event_id);
-$stmt->execute();
-echo "修改成功！<br/>";
+if ($_POST) {
+    $sql = "UPDATE system_event_self SET cond = :cond, cmmt = :cmmt WHERE `id` = :id";
+    $stmt = $dblj->prepare($sql);
+    $stmt->bindParam(':cond', $cond);
+    $stmt->bindParam(':cmmt', $cmmt);
+    $stmt->bindParam(':id', $event_id);
+    $stmt->execute();
+    echo "修改成功！<br/>";
 }
 
 
@@ -157,51 +157,51 @@ switch ($gm_post_canshu) {
         break;
     default:
         $module_type = $gm_post_canshu;
-        $gm_post_canshu = "game_self_page_".$module_type;
+        $gm_post_canshu = "game_self_page_" . $module_type;
         break;
 }
 
 
-if($add_event ==1){
+if ($add_event == 1) {
     $sql = "SELECT MAX(id) AS max_id FROM system_event_self;";
     $cxjg = $dblj->query($sql);
     $row = $cxjg->fetch(PDO::FETCH_ASSOC);
-    $max_id = $row['max_id'] +1;
+    $max_id = $row['max_id'] + 1;
     $sql = "insert into system_event_self(`belong`,`id`,`desc`,`module_id`)values('$main_id','$max_id','$add_value','$gm_post_canshu')";
     $cxjg = $dblj->exec($sql);
-    if($gm_post_canshu >=1 &&$gm_post_canshu <=11){
-    $sql = "update `$module_type` set target_event = '$max_id' where id = '$main_id'";
-    }elseif($gm_post_canshu =='skill_default_use' ||$gm_post_canshu =='skill_use'){
-    $sql = "update `$module_type` set jevent_use_id = '$max_id' where jid = '$main_id'";
-    }elseif($gm_post_canshu =='skill_default_up' ||$gm_post_canshu =='skill_up'){
-    $sql = "update `$module_type` set jevent_up_id = '$max_id' where jid = '$main_id'";
-    }elseif($gm_post_canshu == 'map_creat' || $gm_post_canshu == 'map_look' || $gm_post_canshu == 'map_into' || $gm_post_canshu == 'map_out' || $gm_post_canshu == 'map_minute'){
-    $sql = "update `$module_type` set $module_event_id = '$max_id' where mid = '$main_id'";
-    }elseif($gm_post_canshu == 'item_creat' || $gm_post_canshu == 'item_look' || $gm_post_canshu == 'item_use' || $gm_post_canshu == 'item_minute'){
-    $sql = "update `$module_type` set $module_event_id = '$max_id' where iid = '$main_id'";
-    }elseif($gm_post_canshu == 'npc_creat' || $gm_post_canshu == 'npc_look' || $gm_post_canshu == 'npc_attack' || $gm_post_canshu == 'npc_win' || $gm_post_canshu == 'npc_defeat' || $gm_post_canshu == 'npc_minute' || $gm_post_canshu == 'npc_up' || $gm_post_canshu == 'npc_shop' || $gm_post_canshu == 'npc_heart' || $gm_post_canshu == 'npc_pet'){
-    $sql = "update `$module_type` set $module_event_id = '$max_id' where nid = '$main_id'";
-    }elseif($gm_post_canshu == 'map_op' || $gm_post_canshu == 'item_op' ||$gm_post_canshu == 'npc_op'){
-    $sql = "update `$module_type` set link_event = '$max_id' where id = '$main_id'";
-    }elseif($gm_post_canshu == 'npc_task_accept' || $gm_post_canshu == 'npc_task_giveup' ||$gm_post_canshu == 'npc_task_finish'){
-    $sql = "update `$module_type` set $module_event_id = '$max_id' where tid = '$main_id'";
-    }else{
-    $sql = "update `$gm_post_canshu` set target_event = '$max_id' where id = '$main_id'";
+    if ($gm_post_canshu >= 1 && $gm_post_canshu <= 11) {
+        $sql = "update `$module_type` set target_event = '$max_id' where id = '$main_id'";
+    } elseif ($gm_post_canshu == 'skill_default_use' || $gm_post_canshu == 'skill_use') {
+        $sql = "update `$module_type` set jevent_use_id = '$max_id' where jid = '$main_id'";
+    } elseif ($gm_post_canshu == 'skill_default_up' || $gm_post_canshu == 'skill_up') {
+        $sql = "update `$module_type` set jevent_up_id = '$max_id' where jid = '$main_id'";
+    } elseif ($gm_post_canshu == 'map_creat' || $gm_post_canshu == 'map_look' || $gm_post_canshu == 'map_into' || $gm_post_canshu == 'map_out' || $gm_post_canshu == 'map_minute') {
+        $sql = "update `$module_type` set $module_event_id = '$max_id' where mid = '$main_id'";
+    } elseif ($gm_post_canshu == 'item_creat' || $gm_post_canshu == 'item_look' || $gm_post_canshu == 'item_use' || $gm_post_canshu == 'item_minute') {
+        $sql = "update `$module_type` set $module_event_id = '$max_id' where iid = '$main_id'";
+    } elseif ($gm_post_canshu == 'npc_creat' || $gm_post_canshu == 'npc_look' || $gm_post_canshu == 'npc_attack' || $gm_post_canshu == 'npc_win' || $gm_post_canshu == 'npc_defeat' || $gm_post_canshu == 'npc_minute' || $gm_post_canshu == 'npc_up' || $gm_post_canshu == 'npc_shop' || $gm_post_canshu == 'npc_heart' || $gm_post_canshu == 'npc_pet') {
+        $sql = "update `$module_type` set $module_event_id = '$max_id' where nid = '$main_id'";
+    } elseif ($gm_post_canshu == 'map_op' || $gm_post_canshu == 'item_op' || $gm_post_canshu == 'npc_op') {
+        $sql = "update `$module_type` set link_event = '$max_id' where id = '$main_id'";
+    } elseif ($gm_post_canshu == 'npc_task_accept' || $gm_post_canshu == 'npc_task_giveup' || $gm_post_canshu == 'npc_task_finish') {
+        $sql = "update `$module_type` set $module_event_id = '$max_id' where tid = '$main_id'";
+    } else {
+        $sql = "update `$gm_post_canshu` set target_event = '$max_id' where id = '$main_id'";
     }
-    
+
     $cxjg = $dblj->exec($sql);
     $add_event = 0;
     $event_id = $max_id;
 }
 
-if($now_pos !=0 && $next_pos !=0){
+if ($now_pos != 0 && $next_pos != 0) {
     echo "操作成功！<br/>";
     $query = "SELECT link_evs FROM system_event_self WHERE `id` = '$event_id'";
     $stmt = $dblj->query($query);
     // 获取结果
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $event_link_evs = $row['link_evs'];
-    $event_link_evs = explode(',',$event_link_evs);
+    $event_link_evs = explode(',', $event_link_evs);
     $nowposIndex = array_search($now_pos, $event_link_evs);
     $nextposIndex = array_search($next_pos, $event_link_evs);
     $temp = $event_link_evs[$nowposIndex];
@@ -210,7 +210,7 @@ if($now_pos !=0 && $next_pos !=0){
     $newString = implode(",", $event_link_evs);
     $sql = "update system_event_self set link_evs = '$newString' where `id` = '$event_id'";
     $dblj->exec($sql);
-    }
+}
 
 
 
@@ -222,7 +222,7 @@ $stmt->bindParam(':id', $event_id);
 $stmt->execute();
 $tishi = '';
 $i = 0;
-if ($if_delete ==1){
+if ($if_delete == 1) {
     $tishi = "删除成功！";
 }
 // 获取结果
@@ -233,40 +233,40 @@ $main_id = $rows[0]['belong'];
 $gm_post_canshu = $rows[0]['module_id'];
 
 
-if($gm_post_canshu >=1 &&$gm_post_canshu <=11){
-$gm_main = $encode->encode("cmd=game_page_2&main_id=$main_id&gm_post_canshu=$gm_post_canshu&sid=$sid");
-}elseif($gm_post_canshu =='skill_default_use'||$gm_post_canshu =='skill_default_up'){
-$gm_main = $encode->encode("cmd=gm_skill_def&skill_post_canshu=5&sid=$sid");
-}elseif($gm_post_canshu =='skill_use'||$gm_post_canshu =='skill_up'){
-$gm_main = $encode->encode("cmd=gm_skill_def&skill_id=$main_id&skill_post_canshu=2&sid=$sid");
-}elseif($gm_post_canshu == 'map_creat' || $gm_post_canshu == 'map_look' || $gm_post_canshu == 'map_into' || $gm_post_canshu == 'map_out' || $gm_post_canshu == 'map_minute'){
-$gm_main = $encode->encode("cmd=gm_type_map&target_midid=$main_id&gm_post_canshu=3&sid=$sid");
-}elseif($gm_post_canshu == 'item_creat' || $gm_post_canshu == 'item_look' || $gm_post_canshu == 'item_use' || $gm_post_canshu == 'item_minute'){
-$gm_main = $encode->encode("cmd=gm_type_item&item_id=$main_id&gm_post_canshu=3&sid=$sid");
-}elseif($gm_post_canshu == 'npc_creat' || $gm_post_canshu == 'npc_look' || $gm_post_canshu == 'npc_attack' || $gm_post_canshu == 'npc_win' || $gm_post_canshu == 'npc_defeat' || $gm_post_canshu == 'npc_minute' || $gm_post_canshu == 'npc_up' || $gm_post_canshu == 'npc_shop' || $gm_post_canshu == 'npc_heart' || $gm_post_canshu == 'npc_pet'){
-$gm_main = $encode->encode("cmd=gm_type_npc&npc_id=$main_id&gm_post_canshu=3&sid=$sid");
-}elseif($gm_post_canshu == 'map_op'){
-$gm_main = $encode->encode("cmd=system_map_op_detail&op_id=$main_id&sid=$sid");
-}elseif($gm_post_canshu == 'item_op'){
-$gm_main = $encode->encode("cmd=system_item_op_detail&op_id=$main_id&sid=$sid");
-}elseif($gm_post_canshu == 'npc_op'){
-$gm_main = $encode->encode("cmd=system_npc_op_detail&op_id=$main_id&sid=$sid");
-}elseif($gm_post_canshu == 'npc_task_accept' || $gm_post_canshu == 'npc_task_giveup'||$gm_post_canshu == 'npc_task_finish'){
-$gm_main = $encode->encode("cmd=system_task_detail&task_id=$main_id&sid=$sid");
-}else{
-$prefix = "game_self_page_";
-if (strpos($gm_post_canshu, $prefix) === 0) {
-    $gm_post_canshu = str_replace($prefix, "", $gm_post_canshu);
-}
-$gm_main = $encode->encode("cmd=game_self_page_2&main_id=$main_id&self_id=$gm_post_canshu&sid=$sid");
+if ($gm_post_canshu >= 1 && $gm_post_canshu <= 11) {
+    $gm_main = $encode->encode("cmd=game_page_2&main_id=$main_id&gm_post_canshu=$gm_post_canshu&sid=$sid");
+} elseif ($gm_post_canshu == 'skill_default_use' || $gm_post_canshu == 'skill_default_up') {
+    $gm_main = $encode->encode("cmd=gm_skill_def&skill_post_canshu=5&sid=$sid");
+} elseif ($gm_post_canshu == 'skill_use' || $gm_post_canshu == 'skill_up') {
+    $gm_main = $encode->encode("cmd=gm_skill_def&skill_id=$main_id&skill_post_canshu=2&sid=$sid");
+} elseif ($gm_post_canshu == 'map_creat' || $gm_post_canshu == 'map_look' || $gm_post_canshu == 'map_into' || $gm_post_canshu == 'map_out' || $gm_post_canshu == 'map_minute') {
+    $gm_main = $encode->encode("cmd=gm_type_map&target_midid=$main_id&gm_post_canshu=3&sid=$sid");
+} elseif ($gm_post_canshu == 'item_creat' || $gm_post_canshu == 'item_look' || $gm_post_canshu == 'item_use' || $gm_post_canshu == 'item_minute') {
+    $gm_main = $encode->encode("cmd=gm_type_item&item_id=$main_id&gm_post_canshu=3&sid=$sid");
+} elseif ($gm_post_canshu == 'npc_creat' || $gm_post_canshu == 'npc_look' || $gm_post_canshu == 'npc_attack' || $gm_post_canshu == 'npc_win' || $gm_post_canshu == 'npc_defeat' || $gm_post_canshu == 'npc_minute' || $gm_post_canshu == 'npc_up' || $gm_post_canshu == 'npc_shop' || $gm_post_canshu == 'npc_heart' || $gm_post_canshu == 'npc_pet') {
+    $gm_main = $encode->encode("cmd=gm_type_npc&npc_id=$main_id&gm_post_canshu=3&sid=$sid");
+} elseif ($gm_post_canshu == 'map_op') {
+    $gm_main = $encode->encode("cmd=system_map_op_detail&op_id=$main_id&sid=$sid");
+} elseif ($gm_post_canshu == 'item_op') {
+    $gm_main = $encode->encode("cmd=system_item_op_detail&op_id=$main_id&sid=$sid");
+} elseif ($gm_post_canshu == 'npc_op') {
+    $gm_main = $encode->encode("cmd=system_npc_op_detail&op_id=$main_id&sid=$sid");
+} elseif ($gm_post_canshu == 'npc_task_accept' || $gm_post_canshu == 'npc_task_giveup' || $gm_post_canshu == 'npc_task_finish') {
+    $gm_main = $encode->encode("cmd=system_task_detail&task_id=$main_id&sid=$sid");
+} else {
+    $prefix = "game_self_page_";
+    if (strpos($gm_post_canshu, $prefix) === 0) {
+        $gm_post_canshu = str_replace($prefix, "", $gm_post_canshu);
+    }
+    $gm_main = $encode->encode("cmd=game_self_page_2&main_id=$main_id&self_id=$gm_post_canshu&sid=$sid");
 }
 
 
 
 $link_evs_array = explode(",", $link_evs);
-if(empty($link_evs_array)){
-}else{
-@$last_pos = end($link_evs_array) + 1;
+if (empty($link_evs_array)) {
+} else {
+    @$last_pos = end($link_evs_array) + 1;
 }
 
 
@@ -292,45 +292,41 @@ foreach ($rows as $row) {
             步骤{$index}:<a href="?cmd=$gm_steps_detail">修改</a>
             <a href="?cmd=$gm_steps_delete">删除</a>
 HTML;
-        if($index ==1 && count($steps)>1){
-        $next_pos = $steps[1];
-        $move_next = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$next_pos&sid=$sid");
-        $gm_steps .=<<<HTML
+        if ($index == 1 && count($steps) > 1) {
+            $next_pos = $steps[1];
+            $move_next = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$next_pos&sid=$sid");
+            $gm_steps .= <<<HTML
 [ <font color ="red">上移</font> <a href="?cmd=$move_next">下移</a> ]<br/>
 HTML;
-        }elseif ($index ==count($steps) && count($steps)>1){
-        $next_pos = $steps[$index -2];
-        $move_last = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$next_pos&sid=$sid");
-        $gm_steps .=<<<HTML
+        } elseif ($index == count($steps) && count($steps) > 1) {
+            $next_pos = $steps[$index - 2];
+            $move_last = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$next_pos&sid=$sid");
+            $gm_steps .= <<<HTML
 [ <a href="?cmd=$move_last">上移</a> <font color ="red">下移</font> ]<br/>
 HTML;
-        }
-        elseif($index !=1 && $index !=count($steps) && count($steps)>1){
-        $last_pos = $steps[$index -2];
-        $next_pos = $steps[$index];
-        $move_last = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$last_pos&sid=$sid");
-        $move_next = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$next_pos&sid=$sid");
-        $gm_steps .=<<<HTML
+        } elseif ($index != 1 && $index != count($steps) && count($steps) > 1) {
+            $last_pos = $steps[$index - 2];
+            $next_pos = $steps[$index];
+            $move_last = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$last_pos&sid=$sid");
+            $move_next = $encode->encode("cmd=game_main_event&now_pos=$step&event_id=$event_id&next_pos=$next_pos&sid=$sid");
+            $gm_steps .= <<<HTML
 [ <a href="?cmd=$move_last">上移</a><a href="?cmd=$move_next">下移</a> ]<br/>
 HTML;
-
-        }
-        else{
-    $gm_steps .=<<<HTML
+        } else {
+            $gm_steps .= <<<HTML
 [ <font color ="red">上移 下移</font> ]<br/>
 HTML;
-}
+        }
     }
-
 }
 $sql = "SELECT MAX(id) AS max_id FROM system_event_evs_self;";
 $cxjg = $dblj->query($sql);
 $row = $cxjg->fetch(PDO::FETCH_ASSOC);
-$max_id = $row['max_id'] +1;
+$max_id = $row['max_id'] + 1;
 
 $gm_game_selfeventdefine_addsteps = $encode->encode("cmd=gm_game_selfeventdefine_addsteps&add=1&main_id=$main_id&event_id=$event_id&max_id=$max_id&sid=$sid");
 $gm_game_selfeventdefine_data = $encode->encode("cmd=gm_game_selfeventdefine_data&data_id=$event_id&event_id=$event_id&data_type=events&sid=$sid");
-$gm_html =<<<HTML
+$gm_html = <<<HTML
 $tishi
 <p>[专属事件定义]<br/>
 [定义操作“{$event_name}”的事件(id:{$event_id})]<br/>
@@ -347,4 +343,3 @@ $gm_steps
 </p>
 HTML;
 echo $gm_html;
-?>

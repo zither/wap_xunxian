@@ -50,4 +50,3 @@ $area_html = <<<HTML
 <a href="?cmd=$gm_main">设计大厅</a><br/>
 HTML;
 echo $area_html;
-?>

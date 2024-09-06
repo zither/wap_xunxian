@@ -1,10 +1,10 @@
 <?php
 
 $gm_main = $encode->encode("cmd=gm&sid=$sid");
-$player = \player\getplayer($sid,$dblj);
+$player = \player\getplayer($sid, $dblj);
 
 $get_main_page = '';
-switch($gm_post_canshu){
+switch ($gm_post_canshu) {
     case '1':
         $get_main_page = \gm\get_scene_page($dblj);
         break;
@@ -43,115 +43,115 @@ switch($gm_post_canshu){
 
 
 
-if($delete_canshu==0){
-$op_type = 0;
-$last_pos = 0;
-if(!empty($main_id)){
-    $sql = '';
-    switch($gm_post_canshu){
-        case '1':
-            $sql="select * from game_scene_page where id='$main_id'";
-            break;
-        case '2':
-            $sql="select * from game_npc_page where id='$main_id'";
-            break;
-        case '3':
-            $sql="select * from game_pet_page where id='$main_id'";
-            break;
-        case '4':
-            $sql="select * from game_item_page where id='$main_id'";
-            break;
-        case '5':
-            $sql="select * from game_oplayer_page where id='$main_id'";
-            break;
-        case '6':
-            $sql="select * from game_equip_page where id='$main_id'";
-            break;
-        case '7':
-            $sql="select * from game_player_page where id='$main_id'";
-            break;
-        case '8':
-            $sql="select * from game_skill_page where id='$main_id'";
-            break;
-        case '9':
-            $sql="select * from game_function_page where id='$main_id'";
-            break; 
-        case '10':
-            $sql="select * from game_pve_page where id='$main_id'";
-            break; 
-        case '11':
-            $sql="select * from game_main_page where id='$main_id'";
-            break;
+if ($delete_canshu == 0) {
+    $op_type = 0;
+    $last_pos = 0;
+    if (!empty($main_id)) {
+        $sql = '';
+        switch ($gm_post_canshu) {
+            case '1':
+                $sql = "select * from game_scene_page where id='$main_id'";
+                break;
+            case '2':
+                $sql = "select * from game_npc_page where id='$main_id'";
+                break;
+            case '3':
+                $sql = "select * from game_pet_page where id='$main_id'";
+                break;
+            case '4':
+                $sql = "select * from game_item_page where id='$main_id'";
+                break;
+            case '5':
+                $sql = "select * from game_oplayer_page where id='$main_id'";
+                break;
+            case '6':
+                $sql = "select * from game_equip_page where id='$main_id'";
+                break;
+            case '7':
+                $sql = "select * from game_player_page where id='$main_id'";
+                break;
+            case '8':
+                $sql = "select * from game_skill_page where id='$main_id'";
+                break;
+            case '9':
+                $sql = "select * from game_function_page where id='$main_id'";
+                break;
+            case '10':
+                $sql = "select * from game_pve_page where id='$main_id'";
+                break;
+            case '11':
+                $sql = "select * from game_main_page where id='$main_id'";
+                break;
+        }
+        $cxjg = $dblj->query($sql);
+        $cxjg->bindColumn('value', $main_value);
+        $cxjg->bindColumn('show_cond', $main_cond);
+        $cxjg->bindColumn('type', $main_type);
+        $cxjg->bindColumn('target_event', $target_event);
+        $cxjg->bindColumn('target_func', $target_func);
+        $cxjg->bindColumn('link_value', $link_value);
+        $cxjg->bindColumn('position', $last_pos);
+        $ret = $cxjg->fetch(PDO::FETCH_ASSOC);
+        if ($target_func != 0) {
+            $sql = "select name from system_function where id='$target_func'";
+            $cxjg = $dblj->query($sql);
+            $cxjg->bindColumn('name', $ele_func_name);
+            $ret = $cxjg->fetch(PDO::FETCH_ASSOC);
+        }
+        $op_type = 1;
+    } else {
+
+        switch ($gm_post_canshu) {
+            case '1':
+                $sql = "SELECT MAX(id) AS max_id FROM game_scene_page;";
+                break;
+            case '2':
+                $sql = "SELECT MAX(id) AS max_id FROM game_npc_page;";
+                break;
+            case '3':
+                $sql = "SELECT MAX(id) AS max_id FROM game_pet_page;";
+                break;
+            case '4':
+                $sql = "SELECT MAX(id) AS max_id FROM game_item_page;";
+                break;
+            case '5':
+                $sql = "SELECT MAX(id) AS max_id FROM game_oplayer_page;";
+                break;
+            case '6':
+                $sql = "SELECT MAX(id) AS max_id FROM game_equip_page;";
+                break;
+            case '7':
+                $sql = "SELECT MAX(id) AS max_id FROM game_player_page;";
+                break;
+            case '8':
+                $sql = "SELECT MAX(id) AS max_id FROM game_skill_page;";
+                break;
+            case '9':
+                $sql = "SELECT MAX(id) AS max_id FROM game_function_page;";
+                break;
+            case '10':
+                $sql = "SELECT MAX(id) AS max_id FROM game_pve_page;";
+                break;
+            case '11':
+                $sql = "SELECT MAX(id) AS max_id FROM game_main_page;";
+                break;
+        }
+        $cxjg = $dblj->query($sql);
+        $row = $cxjg->fetch(PDO::FETCH_ASSOC);
+        $max_id = $row['max_id'] + 1;
+        $last_pos = @count($get_main_page) + 1;
     }
-$cxjg = $dblj->query($sql);
-$cxjg->bindColumn('value',$main_value);
-$cxjg->bindColumn('show_cond',$main_cond);
-$cxjg->bindColumn('type',$main_type);
-$cxjg->bindColumn('target_event',$target_event);
-$cxjg->bindColumn('target_func',$target_func);
-$cxjg->bindColumn('link_value',$link_value);
-$cxjg->bindColumn('position',$last_pos);
-$ret = $cxjg->fetch(PDO::FETCH_ASSOC);
-if($target_func !=0){
-    $sql="select name from system_function where id='$target_func'";
-    $cxjg = $dblj->query($sql);
-    $cxjg->bindColumn('name',$ele_func_name);
-    $ret = $cxjg->fetch(PDO::FETCH_ASSOC);
-}
-$op_type = 1;
-}else{
-    
-    switch($gm_post_canshu){
-        case '1':
-            $sql = "SELECT MAX(id) AS max_id FROM game_scene_page;";
-            break;
-        case '2':
-            $sql = "SELECT MAX(id) AS max_id FROM game_npc_page;";
-            break;
-        case '3':
-            $sql = "SELECT MAX(id) AS max_id FROM game_pet_page;";
-            break;
-        case '4':
-            $sql = "SELECT MAX(id) AS max_id FROM game_item_page;";
-            break;
-        case '5':
-            $sql = "SELECT MAX(id) AS max_id FROM game_oplayer_page;";
-            break;
-        case '6':
-            $sql = "SELECT MAX(id) AS max_id FROM game_equip_page;";
-            break;
-        case '7':
-            $sql = "SELECT MAX(id) AS max_id FROM game_player_page;";
-            break;
-        case '8':
-            $sql = "SELECT MAX(id) AS max_id FROM game_skill_page;";
-            break;
-        case '9':
-            $sql = "SELECT MAX(id) AS max_id FROM game_function_page;";
-            break;
-        case '10':
-            $sql = "SELECT MAX(id) AS max_id FROM game_pve_page;";
-            break;
-        case '11':
-            $sql = "SELECT MAX(id) AS max_id FROM game_main_page;";
-            break;
+    $delete_ele = $encode->encode("cmd=delete_ele&delete_value=$main_value&delete_id=$main_id&delete_type=$main_type&gm_post_canshu=$gm_post_canshu&delete_canshu=1&sid=$sid");
+    if ($main_value == '') {
+        $main_value = "未命名";
     }
-    $cxjg = $dblj->query($sql);
-    $row = $cxjg->fetch(PDO::FETCH_ASSOC);
-    $max_id = $row['max_id'] +1;
-    $last_pos = @count($get_main_page)+1;
-}
-$delete_ele = $encode->encode("cmd=delete_ele&delete_value=$main_value&delete_id=$main_id&delete_type=$main_type&gm_post_canshu=$gm_post_canshu&delete_canshu=1&sid=$sid");
-if($main_value ==''){
-    $main_value = "未命名";
-}
-if($link_value ==''){
-    $link_value = "http://";
-}
-switch($main_type){
-    case '1':
-        $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
-        $page=<<<HTML
+    if ($link_value == '') {
+        $link_value = "http://";
+    }
+    switch ($main_type) {
+        case '1':
+            $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
+            $page = <<<HTML
 <form action="?cmd=$game_main" method="post">
 <input type="hidden" name="ele_id" value="$main_id">
 <input type="hidden" name="add_id" value="$max_id">
@@ -163,15 +163,15 @@ switch($main_type){
 <input name="submit" type="submit" title="确定" value="确定"/>
 </form><br/>
 HTML;
-break;
-    case '2':
-        if(!empty($target_event) && !empty($main_id)){
-        $game_main_event = $encode->encode("cmd=game_main_event&gm_post_canshu=$gm_post_canshu&main_id=$main_id&main_type=$main_type&event_id=$target_event&sid=$sid");
-        }else{
-        $game_main_event = $encode->encode("cmd=game_main_event&add_event=1&add_value=$main_value&gm_post_canshu=$gm_post_canshu&main_id=$main_id&main_type=$main_type&sid=$sid");
-        }
-        $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
-        $page=<<<HTML
+            break;
+        case '2':
+            if (!empty($target_event) && !empty($main_id)) {
+                $game_main_event = $encode->encode("cmd=game_main_event&gm_post_canshu=$gm_post_canshu&main_id=$main_id&main_type=$main_type&event_id=$target_event&sid=$sid");
+            } else {
+                $game_main_event = $encode->encode("cmd=game_main_event&add_event=1&add_value=$main_value&gm_post_canshu=$gm_post_canshu&main_id=$main_id&main_type=$main_type&sid=$sid");
+            }
+            $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
+            $page = <<<HTML
 <form action="?cmd=$game_main" method="post">
 <input type="hidden" name="ele_id" value="{$main_id}">
 <input type="hidden" name="add_id" value="{$max_id}">
@@ -185,21 +185,21 @@ break;
 <input name="submit" type="submit" title="确定" value="确定"/>
 </form><br/>
 HTML;
-break;
-    case '3':
-        $query = "SELECT name,id FROM system_function WHERE id = :target_func";
-        $stmt = $dblj->prepare($query);
-        $stmt->bindParam(':target_func', $target_func);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $ele_func_name = $result['name'];
-        if(empty($func_id)){
-            $func_id = $result['id'];
-            $func_name = $ele_func_name;
-        }
-        $game_main_func = $encode->encode("cmd=game_main_func&func_name=$ele_func_name&gm_post_canshu=$gm_post_canshu&main_id=$main_id&main_type=$main_type&func_id=1&sid=$sid");
-        $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
-        $page=<<<HTML
+            break;
+        case '3':
+            $query = "SELECT name,id FROM system_function WHERE id = :target_func";
+            $stmt = $dblj->prepare($query);
+            $stmt->bindParam(':target_func', $target_func);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $ele_func_name = $result['name'];
+            if (empty($func_id)) {
+                $func_id = $result['id'];
+                $func_name = $ele_func_name;
+            }
+            $game_main_func = $encode->encode("cmd=game_main_func&func_name=$ele_func_name&gm_post_canshu=$gm_post_canshu&main_id=$main_id&main_type=$main_type&func_id=1&sid=$sid");
+            $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
+            $page = <<<HTML
 <form action="?cmd=$game_main" method="post">
 <input type="hidden" name="ele_id" value="$main_id">
 <input type="hidden" name="add_id" value="$max_id">
@@ -213,10 +213,10 @@ break;
 <input name="submit" type="submit" title="确定" value="确定"/>
 </form><br/>
 HTML;
-break;
-    case '4':
-        $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
-        $page=<<<HTML
+            break;
+        case '4':
+            $game_main = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
+            $page = <<<HTML
 <form action="?cmd=$game_main" method="post">
 <input type="hidden" name="ele_id" value="$main_id">
 <input type="hidden" name="add_id" value="$max_id">
@@ -229,28 +229,28 @@ break;
 <input name="submit" type="submit" title="确定" value="确定"/>
 </form><br/>
 HTML;
-break;
-}
-if(!empty($main_id)){
-$gm_html =<<<HTML
+            break;
+    }
+    if (!empty($main_id)) {
+        $gm_html = <<<HTML
 $page
 <a href="?cmd=$delete_ele">删除该元素</a><br/>
 <a href="?cmd=$game_main">返回上一级</a><br/>
 <a href="?cmd=$gm_main">返回设计大厅</a><br/>
 HTML;
-}else{
-$gm_html =<<<HTML
+    } else {
+        $gm_html = <<<HTML
 $page
 <a href="?cmd=$game_main">返回上一级</a><br/>
 <a href="?cmd=$gm_main">返回设计大厅</a><br/>
 HTML;
-}
-echo $gm_html;
-}elseif ($delete_canshu==1) {
+    }
+    echo $gm_html;
+} elseif ($delete_canshu == 1) {
     $last_page = $encode->encode("cmd=game_page_2&main_id=$delete_id&gm_post_canshu=$gm_post_canshu&main_type=$delete_type&sid=$sid");
     $sure_delete = $encode->encode("cmd=game_page_2&delete_sure_id=$delete_id&gm_post_canshu=$gm_post_canshu&main_type=$delete_type&sid=$sid");
     $module_page = $encode->encode("cmd=gm_game_pagemoduledefine&gm_post_canshu=$gm_post_canshu&sid=$sid");
-    $gm_html =<<<HTML
+    $gm_html = <<<HTML
     <p>确定要删除"{$delete_value}"元素吗？<br/>
 <a href="?cmd=$sure_delete">确定删除</a><br/>
 <a href="?cmd=$last_page">返回上级</a><br/>
@@ -258,6 +258,5 @@ echo $gm_html;
 <a href="?cmd=$gm_main">返回设计大厅</a><br/>
 </p>
 HTML;
-echo $gm_html;
+    echo $gm_html;
 }
-?>

@@ -1,44 +1,44 @@
 <?php
 
-if($_POST){
-$sql = "UPDATE system_npc_op SET show_cond = :show_cond, name = :op_name WHERE `id` = :id";
-$stmt = $dblj->prepare($sql);
-$stmt->bindParam(':show_cond', $show_cond);
-$stmt->bindParam(':op_name', $op_name);
-$stmt->bindParam(':id', $op_id);
-$stmt->execute();
-$sql = "UPDATE system_event_self SET `desc` = :desc WHERE `belong` = :id and module_id = 'npc_op'";
-$stmt = $dblj->prepare($sql);
-$stmt->bindParam(':desc', $op_name);
-$stmt->bindParam(':id', $op_id);
-$stmt->execute();
-echo "修改成功！<br/>";
+if ($_POST) {
+    $sql = "UPDATE system_npc_op SET show_cond = :show_cond, name = :op_name WHERE `id` = :id";
+    $stmt = $dblj->prepare($sql);
+    $stmt->bindParam(':show_cond', $show_cond);
+    $stmt->bindParam(':op_name', $op_name);
+    $stmt->bindParam(':id', $op_id);
+    $stmt->execute();
+    $sql = "UPDATE system_event_self SET `desc` = :desc WHERE `belong` = :id and module_id = 'npc_op'";
+    $stmt = $dblj->prepare($sql);
+    $stmt->bindParam(':desc', $op_name);
+    $stmt->bindParam(':id', $op_id);
+    $stmt->execute();
+    echo "修改成功！<br/>";
 }
 
-if($add ==1){
-$sql = "insert into system_npc_op(`belong`,`id`,`name`)values('$op_belong','$max_id','未命名')";
-$cxjg = $dblj->exec($sql);
-$op_id = $max_id;
+if ($add == 1) {
+    $sql = "insert into system_npc_op(`belong`,`id`,`name`)values('$op_belong','$max_id','未命名')";
+    $cxjg = $dblj->exec($sql);
+    $op_id = $max_id;
 
-// 检查 a_skills 字段是否为空
-$query = "SELECT nop_target FROM system_npc where nid= '$op_belong'";
-$stmt = $dblj->prepare($query);
-$stmt->execute();
-$result = $stmt->fetch(PDO::FETCH_ASSOC);
+    // 检查 a_skills 字段是否为空
+    $query = "SELECT nop_target FROM system_npc where nid= '$op_belong'";
+    $stmt = $dblj->prepare($query);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (empty($result['nop_target'])) {
-    // a_skills 字段为空，直接赋值为 $string_new
-    $query = "UPDATE system_npc SET nop_target = :new_value where nid= '$op_belong'";
-    $stmt = $dblj->prepare($query);
-    $stmt->bindValue(':new_value', $max_id);
-    $stmt->execute();
-} elseif(!in_array($max_id, explode(',',$result['nop_target']))) {
-    // a_skills 字段不为空，在原有值后面加上逗号和 $string_new
-    $query = "UPDATE system_npc SET nop_target = CONCAT(nop_target, ',', :new_value) where nid= '$op_belong'";
-    $stmt = $dblj->prepare($query);
-    $stmt->bindValue(':new_value', $max_id);
-    $stmt->execute();
-}
+    if (empty($result['nop_target'])) {
+        // a_skills 字段为空，直接赋值为 $string_new
+        $query = "UPDATE system_npc SET nop_target = :new_value where nid= '$op_belong'";
+        $stmt = $dblj->prepare($query);
+        $stmt->bindValue(':new_value', $max_id);
+        $stmt->execute();
+    } elseif (!in_array($max_id, explode(',', $result['nop_target']))) {
+        // a_skills 字段不为空，在原有值后面加上逗号和 $string_new
+        $query = "UPDATE system_npc SET nop_target = CONCAT(nop_target, ',', :new_value) where nid= '$op_belong'";
+        $stmt = $dblj->prepare($query);
+        $stmt->bindValue(':new_value', $max_id);
+        $stmt->execute();
+    }
 }
 
 
@@ -52,15 +52,15 @@ $op_show_cond = $ret['show_cond'];
 $op_link_event = $ret['link_event'];
 $op_link_task = $ret['link_task'];
 
-if($op_link_event ==0){
-$npc_op_events = $encode->encode("cmd=game_main_event&add_event=1&add_value=$op_name&gm_post_canshu=npc_op&main_id=$op_id&event_id=$op_link_event&sid=$sid");
-}else{
-$npc_op_events = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_op&main_id=$op_id&event_id=$op_link_event&sid=$sid");
+if ($op_link_event == 0) {
+    $npc_op_events = $encode->encode("cmd=game_main_event&add_event=1&add_value=$op_name&gm_post_canshu=npc_op&main_id=$op_id&event_id=$op_link_event&sid=$sid");
+} else {
+    $npc_op_events = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_op&main_id=$op_id&event_id=$op_link_event&sid=$sid");
 }
 
 $op_list = $encode->encode("cmd=gm_type_npc&gm_post_canshu=2&npc_id=$op_belong&sid=$sid");
 
-$op_html =<<<HTML
+$op_html = <<<HTML
 <p>定义操作：{$op_name}<br/>
 </p>
 <form method="post">
@@ -75,4 +75,3 @@ $op_html =<<<HTML
 <a href="?cmd=$op_list">返回操作列表</a><br/>
 HTML;
 echo $op_html;
-?>

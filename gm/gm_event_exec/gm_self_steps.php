@@ -20,37 +20,32 @@ foreach ($rows as $row) {
     $event_just_return = $row['just_return'];
     $s_attrs_count = 0;
     if (!empty($row['s_attrs'])) {
-    $s_attrs_count = explode(',', $row['s_attrs']);
-    $s_attrs_count = count($s_attrs_count);
-}
+        $s_attrs_count = explode(',', $row['s_attrs']);
+        $s_attrs_count = count($s_attrs_count);
+    }
 
     $m_attrs_count = 0;
     if (!empty($row['m_attrs'])) {
-    $m_attrs_count = explode(',', $row['m_attrs']);
-    $m_attrs_count = count($m_attrs_count);
-}
+        $m_attrs_count = explode(',', $row['m_attrs']);
+        $m_attrs_count = count($m_attrs_count);
+    }
 
-    
+
     $event_view_user_exp = $row['view_user_exp'];
     $event_page_name = $row['page_name'];
     $event_refresh_scene_npcs = $row['refresh_scene_npcs'];
     $event_refresh_scene_items = $row['refresh_scene_items'];
-    if($event_not_return_link=="0"){
-    $gm_select_0 = "selected";
-}elseif ($event_not_return_link=="1") {
-    $gm_select_1 = "selected";
-}
+    if ($event_not_return_link == "0") {
+        $gm_select_0 = "selected";
+    } elseif ($event_not_return_link == "1") {
+        $gm_select_1 = "selected";
+    }
 
-    if($event_just_return=="0"){
-    $gm_select_2 = "selected";
-}elseif ($event_just_return=="1") {
-    $gm_select_3 = "selected";
-}
-
-
-
-
-
+    if ($event_just_return == "0") {
+        $gm_select_2 = "selected";
+    } elseif ($event_just_return == "1") {
+        $gm_select_3 = "selected";
+    }
 }
 
 $query = "SELECT `desc` FROM system_event WHERE `id` = $event_belong";
@@ -66,7 +61,7 @@ $gm_main = $encode->encode("cmd=game_event_page_1&gm_post_canshu=1&gm_post_cansh
 $gm_game_globaleventdefine_attrset = $encode->encode("cmd=game_event_attrset&gm_post_canshu=$event_belong&gm_post_canshu_2=$event_id&sid=$sid");
 $gm_game_globaleventdefine_attrchange = $encode->encode("cmd=game_event_attrchange&gm_post_canshu=$event_belong&gm_post_canshu_2=$event_id&sid=$sid");
 
-$gm_html =<<<HTML
+$gm_html = <<<HTML
 <p>定义事件[id:{$event_belong}]的步骤{$step_index}<br/>
 </p>
 <form>
@@ -108,5 +103,3 @@ $gm_html =<<<HTML
 <button onclick = "window.location.assign('?cmd=$gm_main')">返回上一级</button><br/>
 HTML;
 echo $gm_html;
-
-?>

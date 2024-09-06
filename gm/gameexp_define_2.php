@@ -10,18 +10,18 @@ $gm = $encode->encode("cmd=gm&sid=$sid");
 
 //$op_type = 0;
 //$last_pos = 0;
-if(!empty($def_id)){
-$sql = "select * from system_exp_def where id = '$def_id'";
-$cxjg = $dblj->query($sql);
-$cxjg->bindColumn('value',$def_value);
-$cxjg->bindColumn('type',$def_type);
-$cxjg->bindColumn('id',$def_id);
-$ret = $cxjg->fetch(PDO::FETCH_ASSOC);
-//$op_type = 1;
+if (!empty($def_id)) {
+    $sql = "select * from system_exp_def where id = '$def_id'";
+    $cxjg = $dblj->query($sql);
+    $cxjg->bindColumn('value', $def_value);
+    $cxjg->bindColumn('type', $def_type);
+    $cxjg->bindColumn('id', $def_id);
+    $ret = $cxjg->fetch(PDO::FETCH_ASSOC);
+    //$op_type = 1;
 }
-if($def_post_canshu !=2&&$def_post_canshu!=3){
-$last_page = $encode->encode("cmd=gm_game_expdefine&sid=$sid");
-$exp_html = <<<HTML
+if ($def_post_canshu != 2 && $def_post_canshu != 3) {
+    $last_page = $encode->encode("cmd=gm_game_expdefine&sid=$sid");
+    $exp_html = <<<HTML
 <p>[表达式定义]<br/>
 增加表达式<br/>
 </p>
@@ -37,17 +37,17 @@ $exp_html = <<<HTML
 <a href="?cmd=$last_page">返回上级</a><br/>
 <a href="?cmd=$gm">返回设计大厅</a><br/>
 HTML;
-}elseif ($def_post_canshu ==2) {
+} elseif ($def_post_canshu == 2) {
     $last_page = $encode->encode("cmd=gm_game_expdefine&sid=$sid");
     $exp_delete = $encode->encode("cmd=gm_exp_def&def_post_canshu=3&def_id=$def_id&sid=$sid");
-    if($def_type=="1"){
-    $gm_select_1 = "selected";
-}elseif ($def_type=="2") {
-    $gm_select_2 = "selected";
-}elseif ($def_type=="3") {
-    $gm_select_3= "selected";
-}
-$exp_html = <<<HTML
+    if ($def_type == "1") {
+        $gm_select_1 = "selected";
+    } elseif ($def_type == "2") {
+        $gm_select_2 = "selected";
+    } elseif ($def_type == "3") {
+        $gm_select_3 = "selected";
+    }
+    $exp_html = <<<HTML
 <p>[表达式定义]<br/>
 修改表达式<br/>
 <a href="?cmd=$exp_delete">删除该表达式</a><br/>
@@ -64,7 +64,7 @@ $exp_html = <<<HTML
 <a href="?cmd=$last_page">返回上级</a><br/>
 <a href="?cmd=$gm">返回设计大厅</a><br/>
 HTML;
-}elseif($def_post_canshu == 3){
+} elseif ($def_post_canshu == 3) {
     $cancel_main = $encode->encode("cmd=gm_exp_def&def_post_canshu=2&def_id=$def_id&sid=$sid");
     $sure_main = $encode->encode("cmd=gm_exp_def&def_post_canshu=6&def_id=$def_id&sid=$sid");
     $exp_html = <<<HTML
@@ -74,4 +74,3 @@ HTML;
 HTML;
 }
 echo $exp_html;
-?>

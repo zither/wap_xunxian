@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['excel_file'])) {
         $map_id = $sheet->getCell('A' . $row)->getValue();
         $map_name = $sheet->getCell('B' . $row)->getValue();
         $map_desc = $sheet->getCell('C' . $row)->getValue();
-        
+
         $refresh_interval = !is_null($sheet->getCell('D' . $row)->getValue()) ? $sheet->getCell('D' . $row)->getValue() : 1;
         $top_exit_id = !is_null($sheet->getCell('E' . $row)->getValue()) ? $sheet->getCell('E' . $row)->getValue() : 0;
         $bottom_exit_id = !is_null($sheet->getCell('F' . $row)->getValue()) ? $sheet->getCell('F' . $row)->getValue() : 0;
@@ -54,8 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['excel_file'])) {
 
 
         // 数据校验
-        if (empty($map_id) || empty($map_name) || !is_numeric($refresh_interval) || 
-            !is_numeric($top_exit_id) || !is_numeric($bottom_exit_id) || !is_numeric($left_exit_id) || !is_numeric($right_exit_id)) {
+        if (
+            empty($map_id) || empty($map_name) || !is_numeric($refresh_interval) ||
+            !is_numeric($top_exit_id) || !is_numeric($bottom_exit_id) || !is_numeric($left_exit_id) || !is_numeric($right_exit_id)
+        ) {
             $errors[] = "第 {$row} 行数据无效：地图ID、名称或其他必填字段为空或格式不正确<br/>";
             continue;
         }
@@ -114,4 +116,3 @@ $last
 HTML;
 
 echo $html;
-?>

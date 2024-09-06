@@ -1,54 +1,54 @@
 <?php
 
-if($_POST){
-    
-if($old_ttype != $ttype){
-    $dblj->exec("UPDATE system_task SET ttarget_obj = '' where tid= '$task_id'");
-}
+if ($_POST) {
 
-if($old_tname !=$task_name){
-    $dblj->exec("UPDATE system_event_self SET `desc` = REPLACE(`desc`, '$old_tname', '$task_name') WHERE `desc` LIKE '%$old_tname%' and belong = '$task_id' and module_id LIKE 'npc_task\_%'");
-}
+    if ($old_ttype != $ttype) {
+        $dblj->exec("UPDATE system_task SET ttarget_obj = '' where tid= '$task_id'");
+    }
 
-$sql = "UPDATE system_task SET ttype = :ttype,ttype2 = :ttype2, tname = :task_name, tgiveup = :tgiveup,tcond = :tcond ,taccept_cond = :taccept_cond ,tcmmt1 = :tcmmt1 ,tcmmt2 = :tcmmt2 WHERE `tid` = :task_id";
-$stmt = $dblj->prepare($sql);
-$stmt->bindParam(':ttype', $ttype);
-$stmt->bindParam(':ttype2', $ttype2);
-$stmt->bindParam(':task_name', $task_name);
-$stmt->bindParam(':tgiveup', $tgive_up);
-$stmt->bindParam(':tcond', $tcond);
-$stmt->bindParam(':taccept_cond', $taccept_cond);
-$stmt->bindParam(':tcmmt1', $tcmmt1);
-$stmt->bindParam(':tcmmt2', $tcmmt2);
-$stmt->bindParam(':task_id', $task_id);
-$stmt->execute();
-echo "修改成功！<br/>";
-}
+    if ($old_tname != $task_name) {
+        $dblj->exec("UPDATE system_event_self SET `desc` = REPLACE(`desc`, '$old_tname', '$task_name') WHERE `desc` LIKE '%$old_tname%' and belong = '$task_id' and module_id LIKE 'npc_task\_%'");
+    }
 
-if($add ==1){
-$sql = "insert into system_task(`tnpc_id`,`tid`,`tname`,`ttype`)values('$task_tnpc_id','$max_id','未命名','1')";
-$cxjg = $dblj->exec($sql);
-$task_id = $max_id;
-
-// 检查 a_skills 字段是否为空
-$query = "SELECT ntask_target FROM system_npc where nid= '$task_tnpc_id'";
-$stmt = $dblj->prepare($query);
-$stmt->execute();
-$result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (empty($result['ntask_target'])) {
-    // a_skills 字段为空，直接赋值为 $string_new
-    $query = "UPDATE system_npc SET ntask_target = :new_value where nid= '$task_tnpc_id'";
-    $stmt = $dblj->prepare($query);
-    $stmt->bindValue(':new_value', $max_id);
+    $sql = "UPDATE system_task SET ttype = :ttype,ttype2 = :ttype2, tname = :task_name, tgiveup = :tgiveup,tcond = :tcond ,taccept_cond = :taccept_cond ,tcmmt1 = :tcmmt1 ,tcmmt2 = :tcmmt2 WHERE `tid` = :task_id";
+    $stmt = $dblj->prepare($sql);
+    $stmt->bindParam(':ttype', $ttype);
+    $stmt->bindParam(':ttype2', $ttype2);
+    $stmt->bindParam(':task_name', $task_name);
+    $stmt->bindParam(':tgiveup', $tgive_up);
+    $stmt->bindParam(':tcond', $tcond);
+    $stmt->bindParam(':taccept_cond', $taccept_cond);
+    $stmt->bindParam(':tcmmt1', $tcmmt1);
+    $stmt->bindParam(':tcmmt2', $tcmmt2);
+    $stmt->bindParam(':task_id', $task_id);
     $stmt->execute();
-} elseif(!in_array($max_id, explode(',',$result['ntask_target']))) {
-    // a_skills 字段不为空，在原有值后面加上逗号和 $string_new
-    $query = "UPDATE system_npc SET ntask_target = CONCAT(ntask_target, ',', :new_value) where nid= '$task_tnpc_id'";
-    $stmt = $dblj->prepare($query);
-    $stmt->bindValue(':new_value', $max_id);
-    $stmt->execute();
+    echo "修改成功！<br/>";
 }
+
+if ($add == 1) {
+    $sql = "insert into system_task(`tnpc_id`,`tid`,`tname`,`ttype`)values('$task_tnpc_id','$max_id','未命名','1')";
+    $cxjg = $dblj->exec($sql);
+    $task_id = $max_id;
+
+    // 检查 a_skills 字段是否为空
+    $query = "SELECT ntask_target FROM system_npc where nid= '$task_tnpc_id'";
+    $stmt = $dblj->prepare($query);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (empty($result['ntask_target'])) {
+        // a_skills 字段为空，直接赋值为 $string_new
+        $query = "UPDATE system_npc SET ntask_target = :new_value where nid= '$task_tnpc_id'";
+        $stmt = $dblj->prepare($query);
+        $stmt->bindValue(':new_value', $max_id);
+        $stmt->execute();
+    } elseif (!in_array($max_id, explode(',', $result['ntask_target']))) {
+        // a_skills 字段不为空，在原有值后面加上逗号和 $string_new
+        $query = "UPDATE system_npc SET ntask_target = CONCAT(ntask_target, ',', :new_value) where nid= '$task_tnpc_id'";
+        $stmt = $dblj->prepare($query);
+        $stmt->bindValue(':new_value', $max_id);
+        $stmt->execute();
+    }
 }
 
 
@@ -71,14 +71,14 @@ $task_event_giveup = $ret['ttarget_event_giveup'];
 $task_event_finish = $ret['ttarget_event_finish'];
 
 $task_giveup = $ret['tgiveup'];
-$task_giveup_select = $task_giveup ==1?"selected" :"";
-$task_type2_select_1 = $task_type2 ==1?"selected" :"";
-$task_type2_select_2 = $task_type2 ==2?"selected" :"";
-$task_type2_select_3 = $task_type2 ==3?"selected" :"";
-if($task_obj){
-$task_obj_count = @count(explode(",",$task_obj));
-}else{
-$task_obj_count = 0;
+$task_giveup_select = $task_giveup == 1 ? "selected" : "";
+$task_type2_select_1 = $task_type2 == 1 ? "selected" : "";
+$task_type2_select_2 = $task_type2 == 2 ? "selected" : "";
+$task_type2_select_3 = $task_type2 == 3 ? "selected" : "";
+if ($task_obj) {
+    $task_obj_count = @count(explode(",", $task_obj));
+} else {
+    $task_obj_count = 0;
 }
 
 switch ($task_type) {
@@ -90,8 +90,8 @@ switch ($task_type) {
 <option value="3">办事任务</option>
 </select><br/>
 HTML;
-$task_type_kill_count = $task_obj_count;
-$task_type_kill_def = $encode->encode("cmd=gm_type_npc&gm_post_canshu=4&canshu=1&task_id=$task_id&sid=$sid");
+        $task_type_kill_count = $task_obj_count;
+        $task_type_kill_def = $encode->encode("cmd=gm_type_npc&gm_post_canshu=4&canshu=1&task_id=$task_id&sid=$sid");
         $task_type_info = <<<HTML
 杀人任务人物列表:<a href="?cmd=$task_type_kill_def">修改({$task_type_kill_count})</a><br/>
 HTML;
@@ -104,8 +104,8 @@ HTML;
 <option value="3">办事任务</option>
 </select><br/>
 HTML;
-$task_type_item_count = $task_obj_count;
-$task_type_item_def = $encode->encode("cmd=gm_type_npc&gm_post_canshu=4&canshu=2&task_id=$task_id&sid=$sid");
+        $task_type_item_count = $task_obj_count;
+        $task_type_item_def = $encode->encode("cmd=gm_type_npc&gm_post_canshu=4&canshu=2&task_id=$task_id&sid=$sid");
         $task_type_info = <<<HTML
 寻物任务物品列表:<a href="?cmd=$task_type_item_def">修改({$task_type_item_count})</a><br/>
 HTML;
@@ -118,36 +118,36 @@ HTML;
 <option value="3" selected>办事任务</option>
 </select><br/>
 HTML;
-$task_type_mark = $task_obj;
+        $task_type_mark = $task_obj;
         $task_type_info = <<<HTML
 办事任务标识名称:<input name="dosth_flag" type="text" value="t{$task_id}" maxlength="50" disabled/><br/>
 HTML;
         break;
 }
-if($task_event_accept ==0){
-$task_name_event = "[".$task_name."]"."的接受";
-$npc_task_events_1 = $encode->encode("cmd=game_main_event&add_event=1&add_value=$task_name_event&gm_post_canshu=npc_task_accept&main_id=$task_id&event_id=$task_event_accept&sid=$sid");
-}else{
-$npc_task_events_1 = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_task_accept&main_id=$task_id&event_id=$task_event_accept&sid=$sid");
+if ($task_event_accept == 0) {
+    $task_name_event = "[" . $task_name . "]" . "的接受";
+    $npc_task_events_1 = $encode->encode("cmd=game_main_event&add_event=1&add_value=$task_name_event&gm_post_canshu=npc_task_accept&main_id=$task_id&event_id=$task_event_accept&sid=$sid");
+} else {
+    $npc_task_events_1 = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_task_accept&main_id=$task_id&event_id=$task_event_accept&sid=$sid");
 }
 
-if($task_event_giveup ==0){
-$task_name_event = "[".$task_name."]"."的放弃";
-$npc_task_events_2 = $encode->encode("cmd=game_main_event&add_event=1&add_value=$task_name_event&gm_post_canshu=npc_task_giveup&main_id=$task_id&event_id=$task_event_giveup&sid=$sid");
-}else{
-$npc_task_events_2 = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_task_giveup&main_id=$task_id&event_id=$task_event_giveup&sid=$sid");
+if ($task_event_giveup == 0) {
+    $task_name_event = "[" . $task_name . "]" . "的放弃";
+    $npc_task_events_2 = $encode->encode("cmd=game_main_event&add_event=1&add_value=$task_name_event&gm_post_canshu=npc_task_giveup&main_id=$task_id&event_id=$task_event_giveup&sid=$sid");
+} else {
+    $npc_task_events_2 = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_task_giveup&main_id=$task_id&event_id=$task_event_giveup&sid=$sid");
 }
 
-if($task_event_finish ==0){
-$task_name_event = "[".$task_name."]"."的完成";
-$npc_task_events_3 = $encode->encode("cmd=game_main_event&add_event=1&add_value=$task_name_event&gm_post_canshu=npc_task_finish&main_id=$task_id&event_id=$task_event_finish&sid=$sid");
-}else{
-$npc_task_events_3 = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_task_finish&main_id=$task_id&event_id=$task_event_finish&sid=$sid");
+if ($task_event_finish == 0) {
+    $task_name_event = "[" . $task_name . "]" . "的完成";
+    $npc_task_events_3 = $encode->encode("cmd=game_main_event&add_event=1&add_value=$task_name_event&gm_post_canshu=npc_task_finish&main_id=$task_id&event_id=$task_event_finish&sid=$sid");
+} else {
+    $npc_task_events_3 = $encode->encode("cmd=game_main_event&gm_post_canshu=npc_task_finish&main_id=$task_id&event_id=$task_event_finish&sid=$sid");
 }
 
 $task_list = $encode->encode("cmd=gm_type_npc&gm_post_canshu=4&npc_id=$task_tnpc_id&sid=$sid");
 
-$task_html =<<<HTML
+$task_html = <<<HTML
 <p>定义任务：{$task_name}<br/>
 </p>
 <form method="post">
@@ -179,4 +179,3 @@ $task_type_info
 <a href="?cmd=$task_list">返回任务列表</a><br/>
 HTML;
 echo $task_html;
-?>

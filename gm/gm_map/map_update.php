@@ -1,7 +1,7 @@
 <?php
 $scene_id = $target_midid;
-$clmid = player\getmid($scene_id,$dblj);
-$scene_name = $clmid ->mname;
+$clmid = player\getmid($scene_id, $dblj);
+$scene_name = $clmid->mname;
 
 //更新将直接执行一次场景刷新事件
 $gm_main = $encode->encode("cmd=gm&sid=$sid");
@@ -15,5 +15,3 @@ $update_html = <<<HTML
 </p>
 HTML;
 echo $update_html;
-
-?>

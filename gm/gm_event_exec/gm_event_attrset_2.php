@@ -3,7 +3,7 @@ $gm_game_globaleventdefine_attr_last = $encode->encode("cmd=game_event_attrset&s
 $attrset_post = $encode->encode("cmd=game_event_attrset&step_belong_id=$step_belong_id&step_id=$step_id&sid=$sid");
 $attr_value_2 = htmlspecialchars($attr_value, ENT_QUOTES, 'UTF-8');
 
-$gm_html =<<<HTML
+$gm_html = <<<HTML
 <p>修改事件步骤的设置属性的值<br/>
 </p>
 <form action="?cmd=$attrset_post" method="post">
@@ -17,4 +17,3 @@ $gm_html =<<<HTML
 <a href="?cmd=$gm_game_globaleventdefine_attr_last">返回上级</a><br/>
 HTML;
 echo $gm_html;
-?>

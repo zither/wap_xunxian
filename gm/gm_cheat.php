@@ -3,22 +3,22 @@
 $stmt = $dblj->query("DESCRIBE game1");
 // 获取字段名称
 $fieldNames = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    
+
 // 输出字段名称
 foreach ($fieldNames as $fieldName) {
-    $gm_attr_text .=<<<HTML
+    $gm_attr_text .= <<<HTML
     {$fieldName}&nbsp; 
 HTML;
 }
-    
+
 // 查询表结构信息
 $stmt = $dblj->query("select DISTINCT name from system_addition_attr");
 // 获取字段名称
 $fieldNames = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    
+
 // 输出字段名称
 foreach ($fieldNames as $fieldName) {
-    $gm_addition_attr_text .=<<<HTML
+    $gm_addition_attr_text .= <<<HTML
     {$fieldName}&nbsp; 
 HTML;
 }
@@ -28,10 +28,10 @@ HTML;
 
 
 
-$player = \player\getplayer($sid,$dblj);
+$player = \player\getplayer($sid, $dblj);
 $gonowmid = $encode->encode("cmd=gm_scene_new&newmid=$player->nowmid&sid=$sid");
 $gm_cheat = $encode->encode("cmd=gm_cheat&sid=$sid");
-$gm_html =<<<HTML
+$gm_html = <<<HTML
     <h1>GM修改器</h1>
     <form action="?cmd=$gm_cheat" method="post">
         <label for="id">ID:</label>
@@ -50,4 +50,3 @@ $gm_html =<<<HTML
     <a href="?cmd=$gonowmid">返回游戏场景</a>
 HTML;
 echo $gm_html;
-?>

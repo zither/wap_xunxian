@@ -1,11 +1,11 @@
-<p>[技能定义]<br/>
-增加技能<br/>
-<?php
-$gm = $encode->encode("cmd=gm&sid=$sid");
-$last_page = $encode->encode("cmd=gm_game_skilldefine&sid=$sid");
-$skill_add_post = $encode->encode("cmd=gm_skill_def&skill_post_canshu=1&sid=$sid");
-$stmt = $dblj->query("SELECT id, name FROM gm_game_attr WHERE value_type = 1 and if_item_use_attr = 1");
-$equip_def_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+<p>[技能定义]<br />
+    增加技能<br />
+    <?php
+    $gm = $encode->encode("cmd=gm&sid=$sid");
+    $last_page = $encode->encode("cmd=gm_game_skilldefine&sid=$sid");
+    $skill_add_post = $encode->encode("cmd=gm_skill_def&skill_post_canshu=1&sid=$sid");
+    $stmt = $dblj->query("SELECT id, name FROM gm_game_attr WHERE value_type = 1 and if_item_use_attr = 1");
+    $equip_def_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // 构建 <select> 元素
     $skill_hurt_attr = <<<HTML
     <select name="hurt_attr">
@@ -23,8 +23,8 @@ HTML;
     </select>
 HTML;
 
-$stmt = $dblj->query("SELECT id, name FROM gm_game_attr WHERE value_type = 1 and if_item_use_attr = 1");
-$equip_def_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $dblj->query("SELECT id, name FROM gm_game_attr WHERE value_type = 1 and if_item_use_attr = 1");
+    $equip_def_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // 构建 <select> 元素
     $skill_deplete_attr = <<<HTML
     <select name="deplete_attr">
@@ -42,8 +42,8 @@ HTML;
     </select>
 HTML;
 
-$stmt = $dblj->query("SELECT id, name FROM system_equip_def WHERE type = 1");
-$equip_def_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $dblj->query("SELECT id, name FROM system_equip_def WHERE type = 1");
+    $equip_def_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // 构建 <select> 元素
     $skill_equip_type = <<<HTML
     <select name="equip_type">
@@ -62,7 +62,7 @@ HTML;
     $skill_equip_type .= <<<HTML
     </select>
 HTML;
-$skill_add_html = <<<HTML
+    $skill_add_html = <<<HTML
 </p>
 <form action="?cmd=$skill_add_post" method="post">
 技能标识:<br/>
@@ -96,5 +96,5 @@ $skill_add_html = <<<HTML
 <a href="?cmd=$last_page">返回上级</a><br/>
 <a href="?cmd=$gm">返回设计大厅</a><br/>
 HTML;
-echo $skill_add_html;
-?>
+    echo $skill_add_html;
+    ?>

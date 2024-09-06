@@ -13,4 +13,3 @@ $rp_list
 </p>
 HTML;
 echo $rp_html;
-?>

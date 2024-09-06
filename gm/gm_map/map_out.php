@@ -1,7 +1,7 @@
 <?php
 $gm = $encode->encode("cmd=gm&sid=$sid");
 $last_page = $encode->encode("cmd=gm_post_4&target_midid=$target_midid&sid=$sid");
-$map_out_ret =  \gm\get_map_out($dblj,$target_midid);
+$map_out_ret =  \gm\get_map_out($dblj, $target_midid);
 $target_midid = $map_out_ret[0]['mid'];
 $map_up = $map_out_ret[0]['mup'];
 $map_down = $map_out_ret[0]['mdown'];
@@ -34,51 +34,51 @@ $map_left_link_copy = $encode->encode("cmd=map_out_choose&update_canshu=4&target
 $map_up_link_copy = $encode->encode("cmd=map_out_choose&update_canshu=4&target_midid=$target_midid&map_out_canshu=4&sid=$sid");
 
 
-$map_out_ret =  \gm\get_map_out($dblj,$map_up);
+$map_out_ret =  \gm\get_map_out($dblj, $map_up);
 $map_up_name = $map_out_ret[0]['mname'];
-$map_out_ret =  \gm\get_map_out($dblj,$map_down);
+$map_out_ret =  \gm\get_map_out($dblj, $map_down);
 $map_down_name = $map_out_ret[0]['mname'];
-$map_out_ret =  \gm\get_map_out($dblj,$map_left);
+$map_out_ret =  \gm\get_map_out($dblj, $map_left);
 $map_left_name = $map_out_ret[0]['mname'];
-$map_out_ret =  \gm\get_map_out($dblj,$map_right);
+$map_out_ret =  \gm\get_map_out($dblj, $map_right);
 $map_right_name = $map_out_ret[0]['mname'];
 
-if($map_right ==''){
-    $map_out .=<<<HTML
+if ($map_right == '') {
+    $map_out .= <<<HTML
 东：<a href = "?cmd=$map_right_choose">选择</a><a href="?cmd=$map_right_link">创建</a><a href="?cmd=$map_right_link_copy">复制</a><br/>
 HTML;
-}else{
-        $map_out .=<<<HTML
+} else {
+    $map_out .= <<<HTML
 东：<a href = "?cmd=$map_right_url">{$map_right_name}</a><a href="?cmd=$map_right_break">断开</a><br/>
 HTML;
 }
 
-if($map_down ==''){
-    $map_out .=<<<HTML
+if ($map_down == '') {
+    $map_out .= <<<HTML
 南：<a href = "?cmd=$map_down_choose">选择</a><a href="?cmd=$map_down_link">创建</a><a href="?cmd=$map_down_link_copy">复制</a><br/>
 HTML;
-}else{
-        $map_out .=<<<HTML
+} else {
+    $map_out .= <<<HTML
 南：<a href = "?cmd=$map_down_url">{$map_down_name}</a><a href="?cmd=$map_down_break">断开</a><br/>
 HTML;
 }
 
-if($map_left ==''){
-    $map_out .=<<<HTML
+if ($map_left == '') {
+    $map_out .= <<<HTML
 西：<a href = "?cmd=$map_left_choose">选择</a><a href="?cmd=$map_left_link">创建</a><a href="?cmd=$map_left_link_copy">复制</a><br/>
 HTML;
-}else{
-        $map_out .=<<<HTML
+} else {
+    $map_out .= <<<HTML
 西：<a href = "?cmd=$map_left_url">{$map_left_name}</a><a href="?cmd=$map_left_break">断开</a><br/>
 HTML;
 }
 
-if($map_up ==''){
-    $map_out .=<<<HTML
+if ($map_up == '') {
+    $map_out .= <<<HTML
 北：<a href = "?cmd=$map_up_choose">选择</a><a href="?cmd=$map_up_link">创建</a><a href="?cmd=$map_up_link_copy">复制</a><br/>
 HTML;
-}else{
-        $map_out .=<<<HTML
+} else {
+    $map_out .= <<<HTML
 北：<a href = "?cmd=$map_up_url">{$map_up_name}</a><a href="?cmd=$map_up_break">断开</a><br/>
 HTML;
 }
@@ -91,5 +91,3 @@ $map_out
 </p>
 HTML;
 echo $map_out_html;
-
-?>
