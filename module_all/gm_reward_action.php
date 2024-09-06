@@ -11,7 +11,7 @@ $reward_cons = $ret['cons_count'];
 $reward_gift = $ret['draw_reward'];
 $reward_cons_open_time = $ret['cons_open_time'];
 $reward_cons_close_time = $ret['cons_close_time'];
-$reward_gift_para = explode(",",$reward_gift);
+$reward_gift_para = explode(",", $reward_gift);
 $items = []; // Initialize an empty array
 
 for ($i = 0; $i < @count($reward_gift_para); $i++) {
@@ -123,4 +123,3 @@ echo <<<HTML
 </body>
 </html>
 HTML;
-?>

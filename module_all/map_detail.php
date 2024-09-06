@@ -2,9 +2,10 @@
 // require_once 'class/lexical_analysis.php';
 // include_once 'pdo.php';
 $map_id = $mid;
-$nowmid_arr = array('name'=>'','desc'=>'','tianqi'=>'','map_upper'=>'','map_left'=>'','map_right'=>'','map_lower'=>'');
+$nowmid_arr = array('name' => '', 'desc' => '', 'tianqi' => '', 'map_upper' => '', 'map_left' => '', 'map_right' => '', 'map_lower' => '');
 $nowmid_desc = '';
-function map_init($map_id,$dblj){
+function map_init($map_id, $dblj)
+{
     global $nowmid_arr; // 声明 $nowmid_arr 为全局变量
     $sql = "SELECT * FROM system_map WHERE mid = :mapId";
     $stmt = $dblj->prepare($sql);
@@ -31,7 +32,8 @@ function map_init($map_id,$dblj){
     return $next_map_name;
 }
 
-function map_find($map_id){
+function map_find($map_id)
+{
     global $dblj;
     $sql = "SELECT mid,mname,mup,mdown,mleft,mright FROM system_map WHERE mid = :mapId";
     $stmt = $dblj->prepare($sql);
@@ -46,7 +48,7 @@ function map_find($map_id){
 }
 
 
-map_init($map_id,$dblj);
+map_init($map_id, $dblj);
 
 $map_0_name = array('m__4_name' => ' ', 'm__3_name' => ' ', 'm__2_name' => ' ', 'm__1_name' => ' ', 'm_0_name' => ' ', 'm_1_name' => ' ', 'm_2_name' => ' ', 'm_3_name' => ' ', 'm_4_name' => ' '); // 正中间
 $map_1_name = array('m__4_name' => ' ', 'm__3_name' => ' ', 'm__2_name' => ' ', 'm__1_name' => ' ', 'm_0_name' => ' ', 'm_1_name' => ' ', 'm_2_name' => ' ', 'm_3_name' => ' ', 'm_4_name' => ' '); // 右边连接
@@ -438,19 +440,19 @@ if ($nowmid_arr['map_left'] > 0) {
 }
 
 if ($jm_upper != '') {
-    $map_2_name['m_0_name'] = '<a href="?cmd=' . $jm_upper . '" '. ' style="font-size:11px;"' . $target_top . '>' . $map_2_name['m_0_name'] . '</a>';
+    $map_2_name['m_0_name'] = '<a href="?cmd=' . $jm_upper . '" ' . ' style="font-size:11px;"' . $target_top . '>' . $map_2_name['m_0_name'] . '</a>';
 }
 
 if ($jm_lower != '') {
-    $map__2_name['m_0_name'] = '<a href="?cmd=' . $jm_lower . '" '. ' style="font-size:11px;"' . $target_top . '>' . $map__2_name['m_0_name'] . '</a>';
+    $map__2_name['m_0_name'] = '<a href="?cmd=' . $jm_lower . '" ' . ' style="font-size:11px;"' . $target_top . '>' . $map__2_name['m_0_name'] . '</a>';
 }
 
 if ($jm_right != '') {
-    $map_0_name['m_2_name'] = '<a href="?cmd=' . $jm_right . '" '. ' style="font-size:11px;"' . $target_top . '>' . $map_0_name['m_2_name'] . '</a>';
+    $map_0_name['m_2_name'] = '<a href="?cmd=' . $jm_right . '" ' . ' style="font-size:11px;"' . $target_top . '>' . $map_0_name['m_2_name'] . '</a>';
 }
 
 if ($jm_left != '') {
-    $map_0_name['m__2_name'] = '<a href="?cmd=' . $jm_left . '" '. ' style="font-size:11px;"' . $target_top . '>' . $map_0_name['m__2_name'] . '</a>';
+    $map_0_name['m__2_name'] = '<a href="?cmd=' . $jm_left . '" ' . ' style="font-size:11px;"' . $target_top . '>' . $map_0_name['m__2_name'] . '</a>';
 }
 
 // Print the map
@@ -515,21 +517,21 @@ $map_check .= '</tr></table>';
 $cmid = $cmid + 1;
 $cdid[] = $cmid;
 $gonowmid = $encode->encode("cmd=gm_scene_new&ucmd=$cmid&sid=$sid");
-if($nowmid_arr['desc']){
-$nowmid_arr['desc'] = \lexical_analysis\process_string($nowmid_arr['desc'],$sid);
-$nowmid_arr['desc'] =\lexical_analysis\color_string($nowmid_arr['desc']);
-$nowmid_desc = $nowmid_arr['desc']."<br/>";
+if ($nowmid_arr['desc']) {
+    $nowmid_arr['desc'] = \lexical_analysis\process_string($nowmid_arr['desc'], $sid);
+    $nowmid_arr['desc'] = \lexical_analysis\color_string($nowmid_arr['desc']);
+    $nowmid_desc = $nowmid_arr['desc'] . "<br/>";
 }
-if($nowmid_arr['tianqi']){
-$nowmid_desc .="天气：".$nowmid_arr['tianqi']."<br/>";
+if ($nowmid_arr['tianqi']) {
+    $nowmid_desc .= "天气：" . $nowmid_arr['tianqi'] . "<br/>";
 }
-$map_check .=<<<HTML
+$map_check .= <<<HTML
 $nowmid_desc
 <a href="?cmd=$gonowmid">返回游戏</a><br/>
 HTML;
 echo $map_check;
 // Function to create an encryption
-function create_encryption($encryption=null, $value)
+function create_encryption($encryption = null, $value)
 {
     global $encode;
     global $sid;
@@ -538,4 +540,3 @@ function create_encryption($encryption=null, $value)
     $value = $encode->encode("cmd=map_detail&mid=$value&ucmd=$cmid&sid=$sid");
     return $value;
 }
-?>

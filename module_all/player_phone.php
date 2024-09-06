@@ -1,23 +1,24 @@
 <?php
-if($_POST['submit']){
-if($telPhone){
-    $result = validatePhone($_POST['telPhone']);
-    if($result ==1){
-    $sql = "update game1 set uphone = '$telPhone' where sid = '$sid'";
-    $dblj->exec($sql);
-    echo "修改成功！<br/>";
-    }else{
-    echo "输入格式有误！<br/>";
+if ($_POST['submit']) {
+    if ($telPhone) {
+        $result = validatePhone($_POST['telPhone']);
+        if ($result == 1) {
+            $sql = "update game1 set uphone = '$telPhone' where sid = '$sid'";
+            $dblj->exec($sql);
+            echo "修改成功！<br/>";
+        } else {
+            echo "输入格式有误！<br/>";
+        }
+    } else {
+        echo "请不要输入空白号码！<br/>";
     }
-}else{
-    echo "请不要输入空白号码！<br/>";
-}
 }
 
-function validatePhone($phone) {
+function validatePhone($phone)
+{
     // 定义电话号码的正则表达式模式
     $pattern = "/^1[3456789]\d{9}$/";
-  
+
     // 使用preg_match函数进行匹配
     if (preg_match($pattern, $phone)) {
         return 1;
@@ -25,7 +26,7 @@ function validatePhone($phone) {
         return 0;
     }
 }
- 
+
 
 
 $cmid = $cmid + 1;
@@ -41,4 +42,3 @@ $phone_html = <<<HTML
 <a href="?cmd=$ret_game">返回游戏</a><br/>
 HTML;
 echo $phone_html;
-?>

@@ -10,21 +10,21 @@ $sql = "select iid from system_item where sid = '$sid' and item_true_id = '$equi
 $cxjg = $dblj->query($sql);
 $ret = $cxjg ? $cxjg->fetch(PDO::FETCH_ASSOC) : [];
 $equip_id = $ret['iid'];
-$equip_arr = \player\getitem($equip_id,$dblj);
-$equip_name = $equip_arr->iname??0;
+$equip_arr = \player\getitem($equip_id, $dblj);
+$equip_name = $equip_arr->iname ?? 0;
 $equip_name = \lexical_analysis\color_string($equip_name);
-$equip_desc = $equip_arr->idesc??0;
+$equip_desc = $equip_arr->idesc ?? 0;
 $equip_desc = \lexical_analysis\color_string($equip_desc);
 
-$equip_iattack_value = $equip_arr->iattack_value==''?0:$equip_arr->iattack_value;
-$equip_irecovery_value = $equip_arr->irecovery_value==''?0:$equip_arr->irecovery_value;
-$equip_iembed_count = $equip_arr->iembed_count ==''?0:$equip_arr->iembed_count;
-$equip_photo_url = $equip_arr->iimage ==''?0:$equip_arr->iimage;
-if($equip_photo_url){
-    $equip_photo_url = "#".$equip_photo_url."#";
+$equip_iattack_value = $equip_arr->iattack_value == '' ? 0 : $equip_arr->iattack_value;
+$equip_irecovery_value = $equip_arr->irecovery_value == '' ? 0 : $equip_arr->irecovery_value;
+$equip_iembed_count = $equip_arr->iembed_count == '' ? 0 : $equip_arr->iembed_count;
+$equip_photo_url = $equip_arr->iimage == '' ? 0 : $equip_arr->iimage;
+if ($equip_photo_url) {
+    $equip_photo_url = "#" . $equip_photo_url . "#";
     $equip_photo = \lexical_analysis\process_photoshow($equip_photo_url);
 }
-$equip_value = $equip_arr->itype =="兵器"?"【攻击力】：{$equip_iattack_value}<br/>":"【防御力】：{$equip_irecovery_value}<br/>";
+$equip_value = $equip_arr->itype == "兵器" ? "【攻击力】：{$equip_iattack_value}<br/>" : "【防御力】：{$equip_irecovery_value}<br/>";
 
 $cmid = $cmid + 1;
 $cdid[] = $cmid;
@@ -48,4 +48,3 @@ $all = <<<HTML
 <a href="?cmd=$ret_game">返回游戏</a><br/>
 HTML;
 echo $all;
-?>

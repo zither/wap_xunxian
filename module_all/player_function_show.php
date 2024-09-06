@@ -32,5 +32,3 @@ $show_html = <<<HTML
 
 HTML;
 echo $show_html;
-
-?>

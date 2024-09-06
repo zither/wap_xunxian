@@ -1,11 +1,11 @@
 <?php
 
-$oplayer = player\getplayer($oid,$dblj);
-$item_para = player\getitem_true($item_true_id,$dblj);
-$item_name = $item_para ->iname;
+$oplayer = player\getplayer($oid, $dblj);
+$item_para = player\getitem_true($item_true_id, $dblj);
+$item_name = $item_para->iname;
 $item_name = \lexical_analysis\color_string($item_name);
-$item_desc = $item_para ->idesc;
-$item_count = player\getitem_true_count($item_true_id,$sid,$dblj);
+$item_desc = $item_para->idesc;
+$item_count = player\getitem_true_count($item_true_id, $sid, $dblj);
 
 $cmid = $cmid + 1;
 $cdid[] = $cmid;
@@ -19,10 +19,10 @@ $gobackgame = $encode->encode("cmd=gm_scene_new&ucmd=$cmid&sid=$sid");
 
 $cmid = $cmid + 1;
 $cdid[] = $cmid;
-if(!$list_page){
-$item_html = $encode->encode("cmd=player_gift&oid=$oid&canshu=$canshu&ucmd=$cmid&sid=$sid");
-}else{
-$item_html = $encode->encode("cmd=player_gift&oid=$oid&list_page=$list_page&canshu=$canshu&ucmd=$cmid&sid=$sid");
+if (!$list_page) {
+    $item_html = $encode->encode("cmd=player_gift&oid=$oid&canshu=$canshu&ucmd=$cmid&sid=$sid");
+} else {
+    $item_html = $encode->encode("cmd=player_gift&oid=$oid&list_page=$list_page&canshu=$canshu&ucmd=$cmid&sid=$sid");
 }
 
 
@@ -44,4 +44,3 @@ $shop_html = <<<HTML
 HTML;
 
 echo $shop_html;
-?>
