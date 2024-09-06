@@ -5,11 +5,12 @@ $text = $test_code_text;
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <script>
         function toggleText_3() {
             var textDiv = document.getElementById("textDiv_3");
-            
+
             if (textDiv.style.display === "none" || textDiv.style.display === "") {
                 textDiv.style.display = "block";
             } else {
@@ -18,7 +19,10 @@ $text = $test_code_text;
         }
     </script>
 </head>
+
 <body>
-  <button onclick="toggleText_3()">post表</button><div id="textDiv_3" style="display: none;"><?php echo $text; ?></div><br/>
+    <button onclick="toggleText_3()">post表</button>
+    <div id="textDiv_3" style="display: none;"><?php echo $text; ?></div><br />
 </body>
+
 </html>
