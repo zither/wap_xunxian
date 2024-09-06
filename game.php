@@ -12,7 +12,6 @@ if ($confi['debug'] ?? false) {
     error_reporting(E_ALL & ~E_NOTICE);
 } else {
     error_reporting(0);
-    //ini_set('display_errors', '0');
 }
 
 require 'class/player.php';
@@ -24,29 +23,24 @@ require 'class/event_data_get.php';
 require 'class/data_lexical.php';
 include 'class/iniclass.php';
 include 'class/global_event_step_change.php';
-// require_once 'class/autoreact.php';
-// header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-// header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-// header("Cache-Control: no-cache, must-revalidate");
-// header("Pragma: no-cache");
-if(!$encode){
-$encode = new \encode\encode();
+
+if (!$encode) {
+    $encode = new \encode\encode();
 }
-if(!$player){
-$player = new \player\player();
+if (!$player) {
+    $player = new \player\player();
 }
-if(!$gm_post){
-$gm_post = new \gm\gm();
-$gm_post = \gm\gm_post($dblj);
+if (!$gm_post) {
+    $gm_post = \gm\gm_post($dblj);
 }
-if(!$guaiwu){
-$guaiwu = new \player\guaiwu();
+if (!$guaiwu) {
+    $guaiwu = new \player\guaiwu();
 }
-if(!$clmid){
-$clmid = new \player\clmid();
+if (!$clmid) {
+    $clmid = new \player\clmid();
 }
-if(!$npc){
-$npc = new \player\npc();
+if (!$npc) {
+    $npc = new \player\npc();
 }
 
 //3-4ms
@@ -54,42 +48,34 @@ $npc = new \player\npc();
 
 $Dcmd = $_SERVER['QUERY_STRING'];
 
-$allow_sep = "300";//间隔时间，单位毫秒。
+$allow_sep = "300"; //间隔时间，单位毫秒。
 
-function getMillisecond() {
+function getMillisecond()
+{
     list($t1, $t2) = explode(' ', microtime());
-    return (float)sprintf('%.0f',(floatval($t1) + floatval($t2)) * 1000);
+    return (float)sprintf('%.0f', (floatval($t1) + floatval($t2)) * 1000);
 }
 
 
-if (isset($_SESSION["post_sep"]))
-{
-    if (getMillisecond() - $_SESSION["post_sep"] < $allow_sep)
-    {
-        $msg = '<meta charset="utf-8" content="width=device-width,user-scalable=no" name="viewport">你点击太快了^_^!<br/><a href="?'.$Dcmd.'">继续</a>';
-        exit($msg);
-    }
-    else
-    {
-        $_SESSION["post_sep"] = getMillisecond();
-    }
-}
-else
-{
-    $_SESSION["post_sep"] = getMillisecond();
+$current_time = getMillisecond();
+if (!isset($_SESSION["post_sep"]) || $current_time - $_SESSION["post_sep"] >= $allow_sep) {
+    $_SESSION["post_sep"] = $current_time;
+} else {
+    $msg = '<meta charset="utf-8" content="width=device-width,user-scalable=no" name="viewport">你点击太快了^_^!<br/><a href="?' . $Dcmd . '">继续</a>';
+    exit($msg);
 }
 
 //@parse_str($Dcmd);//解析Dcmd转为变量
 
-if (isset($Dcmd)) {
+if (!empty($Dcmd)) {
     parse_str($Dcmd, $variables); // $variables 是解析后的变量数组
     // 这里可以对 $variables 数组进行操作
 }
 $cmd = $variables['cmd'];
-if (isset($cmd)&&!isset($sid)){
+if (!empty($cmd) && !isset($sid)) {
     $Dcmd = $encode->decode($cmd);
 
-    parse_str($Dcmd,$variables);
+    parse_str($Dcmd, $variables);
     extract($variables);
     if (!empty($_POST)) {
         extract($_POST);
@@ -100,70 +86,68 @@ if (isset($cmd)&&!isset($sid)){
     $allVars = get_defined_vars();
     // 存储 parse_str 解析后的变量
     $parsedVariables = [];
-        
+
     // 遍历所有变量，将 parse_str 解析结果与当前页面变量进行比较
-    $player = \player\getplayer($sid,$dblj);
+    $player = \player\getplayer($sid, $dblj);
     $uis_designer = $player->uis_designer;
-    if($uis_designer ==1){
-    foreach ($allVars as $name => $value) {
-        if (isset($parsedVars[$name])) {
-            $parsedVariables[$name] = $parsedVars[$name];
+    if ($uis_designer == 1) {
+        foreach ($allVars as $name => $value) {
+            if (isset($parsedVars[$name])) {
+                $parsedVariables[$name] = $parsedVars[$name];
+            }
+        }
+        foreach ($parsedVariables as $name => $value) {
+            $is_designer_parse_str .= "{$name}={$value}<br/>";
+        }
+        $designer_para_cmd = $cmd;
+    }
+
+    //3-4ms
+
+    while (\player\upplayerlvl($sid, $dblj) == 1) {
+        $parents_cmd = 'gm_scene_new';
+        $ret = $ret ?? global_event_data_get(22, $dblj);
+        if ($ret) {
+            global_events_steps_change(22, $sid, $dblj, $just_page, $steps_page, $cmid, 'module/gm_scene_new', null, null, $para);
         }
     }
-    foreach ($parsedVariables as $name => $value) {
-        $is_designer_parse_str .= "{$name}={$value}<br/>";
+
+    //10-11ms
+
+    if ($cmd != 'main_target_event' || !$para) {
+        $sql = "delete from system_player_inputs where sid = '$sid'";
+        $dblj->exec($sql);
     }
-    $designer_para_cmd = $cmd;
+    if ($cmd != "pve_fighting" && $cmd != "pve_fight" && $player->uis_pve == 0) {
+        $sql = "delete from game2 where sid = '$sid'";
+        $dblj->exec($sql);
+        $sql = "delete from game3 where gid = '$sid'";
+        $dblj->exec($sql);
     }
-
-//3-4ms
-
-while (\player\upplayerlvl($sid, $dblj) == 1) {
-    $parents_cmd = 'gm_scene_new';
-    $ret = $ret ?? global_event_data_get(22, $dblj);
-    if ($ret) {
-        global_events_steps_change(22, $sid, $dblj, $just_page, $steps_page, $cmid, 'module/gm_scene_new', null, null, $para);
-    }
-}
-
-
-
-//10-11ms
-
-if($cmd !='main_target_event'||!$para){
-$sql = "delete from system_player_inputs where sid = '$sid'";
-$dblj->exec($sql);
-}
-if($cmd !="pve_fighting"&&$cmd !="pve_fight"&&$player->uis_pve==0){
-$sql = "delete from game2 where sid = '$sid'";
-$dblj->exec($sql);
-$sql = "delete from game3 where gid = '$sid'";
-$dblj->exec($sql);
-}
-if($cmd =='logout'){
-//logout($sid);
-$nowdate = date('Y-m-d H:i:s');
-echo $player->uname."已成功退出登陆！";
-$sql = "update game1 set endtime='$nowdate',sfzx=0,uis_pve=0 WHERE sid='$sid'";
-$dblj->exec($sql);
-$sql = "update game4 set device_agent='' WHERE sid='$sid'";
-$dblj->exec($sql);
-$refresh_html =<<<HTML
+    if ($cmd == 'logout') {
+        //logout($sid);
+        $nowdate = date('Y-m-d H:i:s');
+        echo $player->uname . "已成功退出登陆！";
+        $sql = "update game1 set endtime='$nowdate',sfzx=0,uis_pve=0 WHERE sid='$sid'";
+        $dblj->exec($sql);
+        $sql = "update game4 set device_agent='' WHERE sid='$sid'";
+        $dblj->exec($sql);
+        $refresh_html = <<<HTML
 <meta http-equiv="refresh" content="1;URL=index.php">
 HTML;
-echo $refresh_html;
-//header("refresh:1;url=index.php");
-exit();
-}
+        echo $refresh_html;
+        //header("refresh:1;url=index.php");
+        exit();
+    }
 
- if((!isset($sid)||!$sid) &&$cmd !='cj' &&$cmd !='cjplayer'){
-$refresh_html =<<<HTML
+    if ((!isset($sid) || !$sid) && $cmd != 'cj' && $cmd != 'cjplayer') {
+        $refresh_html = <<<HTML
 <meta http-equiv="refresh" content="0;URL=index.php">
 HTML;
-echo $refresh_html;
-    // header("refresh:0;url=index.php");
-exit();
- }
+        echo $refresh_html;
+        // header("refresh:0;url=index.php");
+        exit();
+    }
 
 
 // 10-11ms
