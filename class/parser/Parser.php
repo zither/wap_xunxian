@@ -1,4 +1,5 @@
 <?php
+
 class Parser {
     private $tokens;
     private $position = 0;
@@ -68,8 +69,7 @@ class Parser {
         return $left;
     }
 
-    private function parseStringWithNestedExpression($initialValue)
-    {
+    private function parseStringWithNestedExpression($initialValue) {
         $result = [
             'type' => 'nested_expression',
             'parts' => []
@@ -91,11 +91,23 @@ class Parser {
     }
 
     private function parseNestedExpression() {
-        $identifier = $this->match('IDENTIFIER');
+        $this->match('IDENTIFIER');
         $this->match('LPAREN');
         $expression = $this->parseExpression();
         $this->match('RPAREN');
         return $expression;
+    }
+
+private function parseFuncCallExpression() {
+        $identifier = $this->match('IDENTIFIER');
+        $this->match('LPAREN');
+        $expression = $this->parseExpression();
+        $this->match('RPAREN');
+        return [
+            'type' => 'func_call_expression',
+            'identifier' => $identifier,
+            'arguments' => $expression,
+        ];
     }
 
     private function parseTerm() {
@@ -105,16 +117,26 @@ class Parser {
             // 递归处理嵌套表达式及其前后可能存在的 STRING token
             return $this->parseStringWithNestedExpression('');
         } elseif ($this->tokens[$this->position]['type'] === 'IDENTIFIER') {
-            $identifier = $this->match('IDENTIFIER');
-            if ($this->tokens[$this->position]['type'] === 'DOT') {
+            if ($this->tokens[$this->position + 1]['type'] === 'LPAREN') {
+                $func = $this->parseFuncCallExpression();
                 $property = $this->parsePropertyChain();
-                return [
-                    'type' => 'property_access',
-                    'object' => $identifier,
-                    'property' => $property
-                ];
+                    return [
+                        'type' => 'property_access',
+                        'object' => $func,
+                        'property' => $property
+                    ];
+            } else {
+                $identifier = $this->match('IDENTIFIER');
+                if ($this->tokens[$this->position]['type'] === 'DOT') {
+                    $property = $this->parsePropertyChain();
+                    return [
+                        'type' => 'property_access',
+                        'object' => $identifier,
+                        'property' => $property
+                    ];
+                }
+                return ['type' => 'identifier', 'value' => $identifier];
             }
-            return ['type' => 'identifier', 'value' => $identifier];
         }
         throw new Exception("Unexpected token parseTerm: " . $this->tokens[$this->position]['type']);
     }
@@ -158,7 +180,11 @@ class Parser {
                     $condition = $this->evaluateExpression($expression['condition']);
                     return $condition ? $this->evaluateExpression($expression['true_value']) : $this->evaluateExpression($expression['false_value']);
                 case 'property_access':
-                    return \lexical_analysis\process_attribute($expression['object'], $expression['property'], $this->sid, $this->oid, $this->mid, $this->jid, $this->type, $this->db, $this->para);
+                    $object = $expression['object'];
+                    if (is_array($object) && $object['type'] === 'func_call_expression') {
+                       return $this->evaluateFuncCall($expression);
+                    }
+                    return \lexical_analysis\process_attribute($object, $expression['property'], $this->sid, $this->oid, $this->mid, $this->jid, $this->type, $this->db, $this->para);
                 case 'code_block':
                     return $this->evaluateExpression($expression['expression']);
                 case 'nested_expression':
@@ -167,11 +193,36 @@ class Parser {
                         $result .= $this->evaluateExpression($part);
                     }
                     return $result;
+                case 'func_call_expression':
+                    return $this->evaluateFuncCall($expression);
                 default:
                     throw new Exception("Unknown expression type: " . $expression['type']);
             }
         }
         return $expression;
+    }
+
+    private function evaluateFuncCall($expression) 
+    {
+        $object = $expression['object'];
+        $uid = $this->evaluateExpression($object['arguments']);
+        $new_expression = [
+            'type' => 'property_access',
+            'object' => 'u',
+            'property' => $expression['property'],
+        ];
+        $newSid = get_sid($uid);
+        $parser = new Parser(
+            [],
+            $this->db,
+            $newSid,
+            $this->oid,
+            $this->mid,
+            $this->jid,
+            $this->type,
+            $this->para
+        );
+        return $parser->evaluateExpression($new_expression);
     }
 
     public function parse() {

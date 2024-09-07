@@ -17,3 +17,16 @@ function process_string_remake($input, $sid, $oid = null, $mid = null, $jid = nu
     $ast = $parser->parse();
     return $parser->evaluate($ast);
 }
+
+function get_sid($uid)
+{
+    $db = DB::pdo();
+    $sql = "SELECT sid FROM game1 WHERE uid = :uid";
+    $stmt = $db->prepare($sql);
+    $stmt->execute(['uid' => $uid]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        die('查询失败: 未找到匹配的记录');
+    }
+    return $row['sid'];
+}
