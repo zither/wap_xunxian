@@ -1,5 +1,4 @@
 <?php
-
 class Parser {
     private $tokens;
     private $position = 0;
@@ -72,7 +71,7 @@ class Parser {
     private function parseStringWithNestedExpression($initialValue)
     {
         $result = [
-            'type' => 'nested_string_expression',
+            'type' => 'nested_expression',
             'parts' => []
         ];
     
@@ -81,7 +80,7 @@ class Parser {
     
             if ($token['type'] === 'STRING') {
                 $result['parts'][] = ['type' => 'string', 'value' => $this->match('STRING')];
-            } elseif ($token['type'] === 'NESTED_START') {
+            } elseif ($token['type'] === 'IDENTIFIER' && $this->tokens[$this->position + 1]['type'] === 'LPAREN') {
                 $result['parts'][] = $this->parseNestedExpression();
             } else {
                 break;
@@ -92,9 +91,10 @@ class Parser {
     }
 
     private function parseNestedExpression() {
-        $this->match('NESTED_START');
+        $identifier = $this->match('IDENTIFIER');
+        $this->match('LPAREN');
         $expression = $this->parseExpression();
-        $this->match('NESTED_END');
+        $this->match('RPAREN');
         return $expression;
     }
 
@@ -161,7 +161,7 @@ class Parser {
                     return \lexical_analysis\process_attribute($expression['object'], $expression['property'], $this->sid, $this->oid, $this->mid, $this->jid, $this->type, $this->db, $this->para);
                 case 'code_block':
                     return $this->evaluateExpression($expression['expression']);
-                case 'nested_string_expression':
+                case 'nested_expression':
                     $result = '';
                     foreach ($expression['parts'] as $part) {
                         $result .= $this->evaluateExpression($part);

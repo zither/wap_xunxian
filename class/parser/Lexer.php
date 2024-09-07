@@ -61,6 +61,12 @@ class Lexer {
                     $this->tokens[] = ['type' => 'IDENTIFIER', 'value' => $this->readIdentifier()];
                 } elseif ($char === ' ' || $char === "\t" || $char === "\n" || $char === "\r") {
                     $this->position++;
+                } elseif ($char === '(') {
+                    $this->tokens[] = ['type' => 'LPAREN', 'value' => '('];
+                    $this->position++;
+                } elseif ($char === ')') {
+                    $this->tokens[] = ['type' => 'RPAREN', 'value' => ')'];
+                    $this->position++;
                 } else {
                     throw new Exception("Unexpected character: " . $char);
                 }
@@ -109,6 +115,9 @@ class Lexer {
                     $this->tokens[] = ['type' => 'STRING', 'value' => $value];
                     $value = '';
                 }
+                $this->tokens[] = ['type' => 'IDENTIFIER', 'value' => 'v'];
+                $this->tokens[] = ['type' => 'LPAREN', 'value' => '('];
+                $this->position += 2; // 跳过 'v('
                 $this->readNestedExpression();
             } else {
                 $value .= $char;
@@ -127,12 +136,10 @@ class Lexer {
     }
 
     private function readNestedExpression() {
-        $this->tokens[] = ['type' => 'NESTED_START', 'value' => 'v('];
-        $this->position += 2; // 跳过 'v('
         while ($this->position < strlen($this->input)) {
             $char = $this->input[$this->position];
-            if ($char === ')' && $this->input[$this->position - 1] !== '\\') {
-                $this->tokens[] = ['type' => 'NESTED_END', 'value' => ')'];
+            if ($char === ')') {
+                $this->tokens[] = ['type' => 'RPAREN', 'value' => ')'];
                 $this->position++;
                 break;
             } elseif ($char === '.') {
