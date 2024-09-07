@@ -11,6 +11,8 @@ require 'class/basic_function_todo.php';
 // include_once 'class/global_event_step_change.php';
 include_once 'class/events_steps_change.php';
 
+include_once 'parser.php';
+
 $parents_page = $currentFilePath;
 // $encode = new \encode\encode();
 // $player = new \player\player();
@@ -234,28 +236,30 @@ if ($u_sailing == 1) {
             $main_show_cond = $get_main_page[$i]['show_cond'];
             //var_dump($main_show_cond."<br/>");
 
-            $show_ret = $main_show_cond !== ''
-                ? \lexical_analysis\process_string($main_show_cond, $sid, $oid, $mid, null, null, null)
-                : 1;
-            //由于.在php中会被识别为函数省略
-            // 将 . 替换为 。
+            //$show_ret = $main_show_cond !== ''
+            //    ? \lexical_analysis\process_string($main_show_cond, $sid, $oid, $mid, null, null, null)
+            //    : 1;
+            ////由于.在php中会被识别为函数省略
+            //// 将 . 替换为 。
 
-            $show_ret = str_replace('.', '。', $show_ret);
-            $ret = @eval("return $show_ret;");
-            $ret_bool = ($ret !== false && $ret !== null) ? 0 : 1;
+            $show_ret = process_string_remake($main_show_cond, $sid, $oid, $mid, null, null, null);
+            $ret_bool = $show_ret || $show_ret == '' ? '0' : '1';
+
+            //$ret = @eval("return $show_ret;");
+            //$ret_bool = ($ret !== false && $ret !== null) ? 0 : 1;
             if ($ret_bool == 0) {
                 $main_value = nl2br($main_value);
                 $main_target_event = $get_main_page[$i]['target_event'];
                 $main_target_func = $get_main_page[$i]['target_func'];
                 $main_link_value = $get_main_page[$i]['link_value'];
-                $main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
-                $main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+                //$main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+                $main_value = process_string_remake($main_value, $sid, $oid, $mid);
                 $main_value = \lexical_analysis\process_photoshow($main_value);
                 $main_value = \lexical_analysis\color_string($main_value);
             } else {
                 $main_value = nl2br($main_value);
-                $main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
-                $main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+                //$main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+                $main_value = process_string_remake($main_value, $sid, $oid, $mid);
                 $main_value = \lexical_analysis\process_photoshow($main_value);
                 $main_value = \lexical_analysis\color_string($main_value);
             }
@@ -265,7 +269,8 @@ if ($u_sailing == 1) {
                 $main_value = preg_replace_callback($pattern, function ($matches) {
                     $content = $matches[1]; // 获取方括号中的内容
                     // 进行处理，例如将内容转换为大写
-                    $processedContent = @eval("return $content;");
+                    //$processedContent = @eval("return $content;");
+                    $processedContent = $content;
                     return '[' . $processedContent . ']'; // 将处理后的内容放回原字符串中
                 }, $main_value);
             } catch (ParseError $e) {

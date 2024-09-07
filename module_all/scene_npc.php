@@ -3,9 +3,12 @@ require_once 'class/player.php';
 require_once 'class/encode.php';
 require_once 'class/gm.php';
 include_once 'pdo.php';
-// require_once 'class/lexical_analysis.php';
+require_once 'class/lexical_analysis.php';
 require_once 'class/basic_function_todo.php';
 include_once 'class/events_steps_change.php';
+
+include_once 'parser.php';
+
 
 $parents_page = $currentFilePath;
 // $encode = new \encode\encode();
@@ -36,7 +39,10 @@ if (!$ngid) {
             $rw_type = $nowrw->ttype;
             $rw_accept_cond = $nowrw->taccept_cond;
             $rw_cmmt1 = $nowrw->tcmmt1;
+            
             $rw_cmmt1 = \lexical_analysis\process_string($rw_cmmt1, $sid, $oid, $mid);
+
+
             $rw_accept_cond = checkTriggerCondition($rw_accept_cond, $dblj, $sid);
             if (is_null($rw_accept_cond)) {
                 $rw_accept_cond = true;
@@ -161,25 +167,26 @@ for ($i = 0; $i < count($get_main_page); $i++) {
         $mid = $nid;
     }
 
-    $show_ret = \lexical_analysis\process_string($main_show_cond, $sid, $oid, $mid, null, null, null);
+    //$show_ret = \lexical_analysis\process_string($main_show_cond, $sid, $oid, $mid, null, null, null);
+    $show_ret = process_string_remake($main_show_cond, $sid, $oid, $mid, null);
     // 替换运算符
     try {
-        @$ret = eval("return $show_ret;");
+        $ret = $show_ret;
+        //@$ret = eval("return $show_ret;");
     } catch (ParseError $e) {
         print("语法错误: " . $e->getMessage());
     } catch (Error $e) {
         print("执行错误: " . $e->getMessage());
     }
-    $ret_bool = $ret ? '0' : '1';
-    if (is_null($ret)) {
-        $ret_bool = 0;
-    }
+    $ret_bool = $show_ret || $show_ret == '' ? '0' : '1';
+
     $main_value = nl2br($main_value);
     $main_target_event = $get_main_page[$i]['target_event'];
     $main_target_func = $get_main_page[$i]['target_func'];
     $main_link_value = $get_main_page[$i]['link_value'];
     //$main_value = \lexical_analysis\process_string($main_value,$sid,$oid,$mid);
-    $main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+    //$main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+    $main_value = process_string_remake($main_value, $sid, $oid, $mid);
     $main_value = \lexical_analysis\process_photoshow($main_value);
     $main_value = \lexical_analysis\color_string($main_value);
 
@@ -189,7 +196,8 @@ for ($i = 0; $i < count($get_main_page); $i++) {
         $main_value = preg_replace_callback($pattern, function ($matches) {
             $content = $matches[1]; // 获取方括号中的内容
             // 进行处理，例如将内容转换为大写
-            $processedContent = @eval("return $content;");
+            //$processedContent = @eval("return $content;");
+            $processedContent = $content;
             return '[' . $processedContent . ']'; // 将处理后的内容放回原字符串中
         }, $main_value);
     } catch (ParseError $e) {
@@ -207,7 +215,6 @@ for ($i = 0; $i < count($get_main_page); $i++) {
     }
     if ($main_target_func != 0 && $ret_bool == 0) {
         $main_target_func = basic_func_choose($cmd, $main_target_func, $sid, $dblj, $main_value, $mid, 2, $cmid);
-        //var_dump($main_target_func);
     } elseif ($main_target_func == 0) {
         $main_target_func = $encode->encode("cmd=func_no_define&parents_page=$parents_page&$parents_cmd=$cmd&sid=$sid");
     }

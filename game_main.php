@@ -11,6 +11,7 @@ require_once 'class/gm.php';
 include_once 'pdo.php';
 // require_once 'class/lexical_analysis.php';
 require_once 'class/basic_function_todo.php';
+include_once 'parser.php';
 
 $parents_page = $currentFilePath;
 // $encode = new \encode\encode();
@@ -26,12 +27,10 @@ for ($i = 0; $i < count($get_main_page); $i++) {
     $main_type = $get_main_page[$i]['type'];
     $main_value = $get_main_page[$i]['value'];
     $main_show_cond = $get_main_page[$i]['show_cond'];
-    $show_ret = \lexical_analysis\process_string($main_show_cond, $sid);
-    @$ret = eval("return $show_ret;");
-    $ret_bool = $ret ? '0' : '1';
-    if (is_null($ret)) {
-        $ret_bool = 0;
-    }
+    //$show_ret = \lexical_analysis\process_string($main_show_cond, $sid);
+    $show_ret = process_string_remake($show_ret, $sid);
+    $ret_bool = $show_ret || $show_ret == '' ? '0' : '1';
+
     $main_value = nl2br($main_value);
     $main_target_event = $get_main_page[$i]['target_event'];
     $main_target_func = $get_main_page[$i]['target_func'];
@@ -49,8 +48,8 @@ for ($i = 0; $i < count($get_main_page); $i++) {
     } elseif ($main_target_func == 0) {
         $main_target_func = $encode->encode("cmd=func_no_define&parents_page=$parents_cmd=$cmd&ucmd=$cmid&parents_page&sid=$sid");
     }
-    $main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
-    $main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+    //$main_value = \lexical_analysis\process_string($main_value, $sid, $oid, $mid);
+    $main_value = process_string_remake($main_value, $sid, $oid, $mid);
     $main_value = \lexical_analysis\process_photoshow($main_value);
     $main_value = \lexical_analysis\color_string($main_value);
 
@@ -60,7 +59,8 @@ for ($i = 0; $i < count($get_main_page); $i++) {
         $main_value = preg_replace_callback($pattern, function ($matches) {
             $content = $matches[1]; // 获取方括号中的内容
             // 进行处理，例如将内容转换为大写
-            $processedContent = @eval("return $content;");
+            //$processedContent = @eval("return $content;");
+            $processedContent = $content;
             return '[' . $processedContent . ']'; // 将处理后的内容放回原字符串中
         }, $main_value);
     } catch (ParseError $e) {

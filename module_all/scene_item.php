@@ -2,6 +2,7 @@
 // require_once 'class/lexical_analysis.php';
 
 // $player = new \player\player();
+
 $player = \player\getplayer($sid, $dblj);
 // $gm_post = new \gm\gm();
 $gm_post = \gm\gm_post($dblj);
