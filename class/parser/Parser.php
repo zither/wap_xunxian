@@ -74,8 +74,7 @@ class Parser {
         } elseif ($this->tokens[$this->position]['type'] === 'IDENTIFIER') {
             $identifier = $this->match('IDENTIFIER');
             if ($this->tokens[$this->position]['type'] === 'DOT') {
-                $this->match('DOT');
-                $property = $this->match('IDENTIFIER');
+                $property = $this->parsePropertyChain();
                 return [
                     'type' => 'property_access',
                     'object' => $identifier,
@@ -87,8 +86,16 @@ class Parser {
         throw new Exception("Unexpected token: " . $this->tokens[$this->position]['type']);
     }
 
-    private function evaluateExpression($expression)
-    {
+    private function parsePropertyChain() {
+        $property = '';
+        while ($this->tokens[$this->position]['type'] === 'DOT') {
+            $this->match('DOT');
+            $property .= '.' . $this->match('IDENTIFIER');
+        }
+        return ltrim($property, '.');
+    }
+
+    private function evaluateExpression($expression) {
         if (is_array($expression)) {
             switch ($expression['type']) {
                 case 'binary_expression':
@@ -121,7 +128,6 @@ class Parser {
         }
         return $expression;
     }
-
 
     public function parse() {
         $result = '';
