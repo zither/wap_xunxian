@@ -5,6 +5,8 @@ class Lexer {
     private $position = 0;
     private $tokens = [];
     private $inCodeBlock = false;
+    private $inString = false;
+    private $stringQuote = '';
 
     public function __construct($input) {
         if (!is_string($input)) {
@@ -54,7 +56,7 @@ class Lexer {
                 } elseif (ctype_digit($char)) {
                     $this->tokens[] = ['type' => 'NUMBER', 'value' => $this->readNumber()];
                 } elseif ($char === "'" || $char === '"') {
-                    $this->tokens[] = ['type' => 'STRING', 'value' => $this->readString($char)];
+                    $this->readString($char);
                 } elseif (ctype_alpha($char) || $char === '_') {
                     $this->tokens[] = ['type' => 'IDENTIFIER', 'value' => $this->readIdentifier()];
                 } elseif ($char === ' ' || $char === "\t" || $char === "\n" || $char === "\r") {
@@ -91,15 +93,57 @@ class Lexer {
     private function readString($quote) {
         $start = $this->position;
         $this->position++;
-        while ($this->position < strlen($this->input) && $this->input[$this->position] !== $quote) {
-            $this->position++;
+        $this->inString = true;
+        $this->stringQuote = $quote;
+        $value = '';
+        while ($this->position < strlen($this->input)) {
+            $char = $this->input[$this->position];
+            if ($char === $quote && $this->input[$this->position - 1] !== '\\') {
+                $this->inString = false;
+                $this->stringQuote = '';
+                $this->position++;
+                break;
+            } elseif ($char === 'v' && $this->input[$this->position + 1] === '(') {
+                // 遇到嵌套表达式，先添加当前解析的字符串部分
+                if ($value !== '') {
+                    $this->tokens[] = ['type' => 'STRING', 'value' => $value];
+                    $value = '';
+                }
+                $this->readNestedExpression();
+            } else {
+                $value .= $char;
+                $this->position++;
+            }
         }
-        if ($this->position >= strlen($this->input)) {
+        if ($this->inString) {
             throw new Exception("Unterminated string");
         }
-        $value = substr($this->input, $start + 1, $this->position - $start - 1);
-        $this->position++;
-        return $value;
+        if ($value !== '') {
+            $this->tokens[] = ['type' => 'STRING', 'value' => $value];
+        } else {
+            // 处理空字符串的情况
+            $this->tokens[] = ['type' => 'STRING', 'value' => ''];
+        }
+    }
+
+    private function readNestedExpression() {
+        $this->tokens[] = ['type' => 'NESTED_START', 'value' => 'v('];
+        $this->position += 2; // 跳过 'v('
+        while ($this->position < strlen($this->input)) {
+            $char = $this->input[$this->position];
+            if ($char === ')' && $this->input[$this->position - 1] !== '\\') {
+                $this->tokens[] = ['type' => 'NESTED_END', 'value' => ')'];
+                $this->position++;
+                break;
+            } elseif ($char === '.') {
+                $this->tokens[] = ['type' => 'DOT', 'value' => '.'];
+                $this->position++;
+            } elseif (ctype_alpha($char) || $char === '_') {
+                $this->tokens[] = ['type' => 'IDENTIFIER', 'value' => $this->readIdentifier()];
+            } else {
+                throw new Exception("Unexpected character in nested expression: " . $char);
+            }
+        }
     }
 
     private function readIdentifier() {
@@ -119,7 +163,7 @@ class Lexer {
         switch ($operator) {
             case '>':
                 $this->position++; // 移动到下一个字符
-                $type ='GT';
+                $type = 'GT';
                 break;
             case '<':
                 $this->position++; // 移动到下一个字符

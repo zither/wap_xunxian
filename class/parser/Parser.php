@@ -29,7 +29,8 @@ class Parser {
         if ($this->position < count($this->tokens) && $this->tokens[$this->position]['type'] === $type) {
             return $this->tokens[$this->position++]['value'];
         }
-        throw new Exception("Unexpected token: " . $this->tokens[$this->position]['type']);
+        var_dump($this->tokens[$this->position]['type'], $type);
+        throw new Exception("Unexpected token match: " . $this->tokens[$this->position]['type']);
     }
 
     private function parseCodeBlock() {
@@ -41,6 +42,7 @@ class Parser {
 
     private function parseExpression() {
         $left = $this->parseTerm();
+        
         while ($this->position < count($this->tokens) && in_array($this->tokens[$this->position]['type'], ['GT', 'LT', 'EQ', 'NEQ', 'OR', 'AND'])) {
             $operator = $this->match($this->tokens[$this->position]['type']);
             $right = $this->parseTerm();
@@ -51,11 +53,12 @@ class Parser {
                 'right' => $right
             ];
         }
+        
         if ($this->position < count($this->tokens) && $this->tokens[$this->position]['type'] === 'TERNARY') {
             $this->match('TERNARY');
-            $trueValue = $this->parseTerm();
+            $trueValue = $this->parseExpression(); // 递归解析 true 分支
             $this->match('COLON');
-            $falseValue = $this->parseTerm();
+            $falseValue = $this->parseExpression(); // 递归解析 false 分支
             return [
                 'type' => 'ternary_expression',
                 'condition' => $left,
@@ -63,14 +66,56 @@ class Parser {
                 'false_value' => $falseValue
             ];
         }
+        
         return $left;
     }
 
+    private function parseStringWithNestedExpression($initialValue)
+    {
+        $result = $initialValue;
+
+        while ($this->position < count($this->tokens)) {
+            $token = $this->tokens[$this->position];
+
+            if ($token['type'] === 'STRING') {
+                $result .= $this->match('STRING');
+            } elseif ($token['type'] === 'NESTED_START') {
+                $nestedExpression = $this->parseNestedExpression();
+                $result .= $nestedExpression;
+            } else {
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    private function parseNestedExpression() {
+        $this->match('NESTED_START');
+        $expression = $this->parseExpression();
+        $this->match('NESTED_END');
+        
+        // 处理嵌套表达式前后的 STRING token
+        $result = '';
+        // 处理嵌套表达式
+        $result .= $this->evaluateExpression($expression);
+        
+        // 处理嵌套表达式后的 STRING token
+        while ($this->position < count($this->tokens) && $this->tokens[$this->position]['type'] === 'STRING') {
+            $result .= $this->match('STRING');
+        }
+        
+        return $result;
+    }
+
     private function parseTerm() {
+        $token = $this->tokens[$this->position];
         if ($this->tokens[$this->position]['type'] === 'NUMBER') {
             return $this->match('NUMBER');
         } elseif ($this->tokens[$this->position]['type'] === 'STRING') {
-            return $this->match('STRING');
+            // 递归处理嵌套表达式及其前后可能存在的 STRING token
+            $token['value'] = $this->parseStringWithNestedExpression('');
+            return $token;
         } elseif ($this->tokens[$this->position]['type'] === 'IDENTIFIER') {
             $identifier = $this->match('IDENTIFIER');
             if ($this->tokens[$this->position]['type'] === 'DOT') {
@@ -83,7 +128,8 @@ class Parser {
             }
             return $identifier;
         }
-        throw new Exception("Unexpected token: " . $this->tokens[$this->position]['type']);
+        throw new Exception("Unexpected token parseTerm: " . $this->tokens[$this->position]['type']);
+
     }
 
     private function parsePropertyChain() {
@@ -98,22 +144,24 @@ class Parser {
     private function evaluateExpression($expression) {
         if (is_array($expression)) {
             switch ($expression['type']) {
+                case 'STRING':
+                    return $expression['value'];
                 case 'binary_expression':
                     $left = $this->evaluateExpression($expression['left']);
                     $right = $this->evaluateExpression($expression['right']);
                     switch ($expression['operator']) {
                         case '>':
-                            return $left > $right;
+                            return ($left > $right) ? 1 : 0;
                         case '<':
-                            return $left < $right;
+                            return ($left < $right) ? 1 : 0;
                         case '==':
-                            return $left == $right;
+                            return ($left == $right) ? 1 : 0;
                         case '!=':
-                            return $left != $right;
+                            return ($left != $right) ? 1 : 0;
                         case '||':
-                            return $left || $right;
+                            return ($left || $right) ? 1 : 0;
                         case '&&':
-                            return $left && $right;
+                            return ($left && $right) ? 1 : 0;
                         default:
                             throw new Exception("Unknown operator: " . $expression['operator']);
                     }
