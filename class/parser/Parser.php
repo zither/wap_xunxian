@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__. '/../lexical_analysis.php';
-
-
 class Parser {
     private $tokens;
     private $position = 0;
@@ -29,7 +26,6 @@ class Parser {
         if ($this->position < count($this->tokens) && $this->tokens[$this->position]['type'] === $type) {
             return $this->tokens[$this->position++]['value'];
         }
-        var_dump($this->tokens[$this->position]['type'], $type);
         throw new Exception("Unexpected token match: " . $this->tokens[$this->position]['type']);
     }
 
@@ -37,7 +33,10 @@ class Parser {
         $this->match('LBRACE');
         $expression = $this->parseExpression();
         $this->match('RBRACE');
-        return $this->evaluateExpression($expression);
+        return [
+            'type' => 'code_block',
+            'expression' => $expression
+        ];
     }
 
     private function parseExpression() {
@@ -72,21 +71,23 @@ class Parser {
 
     private function parseStringWithNestedExpression($initialValue)
     {
-        $result = $initialValue;
-
+        $result = [
+            'type' => 'nested_string_expression',
+            'parts' => []
+        ];
+    
         while ($this->position < count($this->tokens)) {
             $token = $this->tokens[$this->position];
-
+    
             if ($token['type'] === 'STRING') {
-                $result .= $this->match('STRING');
+                $result['parts'][] = ['type' => 'string', 'value' => $this->match('STRING')];
             } elseif ($token['type'] === 'NESTED_START') {
-                $nestedExpression = $this->parseNestedExpression();
-                $result .= $nestedExpression;
+                $result['parts'][] = $this->parseNestedExpression();
             } else {
                 break;
             }
         }
-
+    
         return $result;
     }
 
@@ -94,28 +95,15 @@ class Parser {
         $this->match('NESTED_START');
         $expression = $this->parseExpression();
         $this->match('NESTED_END');
-        
-        // 处理嵌套表达式前后的 STRING token
-        $result = '';
-        // 处理嵌套表达式
-        $result .= $this->evaluateExpression($expression);
-        
-        // 处理嵌套表达式后的 STRING token
-        while ($this->position < count($this->tokens) && $this->tokens[$this->position]['type'] === 'STRING') {
-            $result .= $this->match('STRING');
-        }
-        
-        return $result;
+        return $expression;
     }
 
     private function parseTerm() {
-        $token = $this->tokens[$this->position];
         if ($this->tokens[$this->position]['type'] === 'NUMBER') {
-            return $this->match('NUMBER');
+            return ['type' => 'number', 'value' => $this->match('NUMBER')];
         } elseif ($this->tokens[$this->position]['type'] === 'STRING') {
             // 递归处理嵌套表达式及其前后可能存在的 STRING token
-            $token['value'] = $this->parseStringWithNestedExpression('');
-            return $token;
+            return $this->parseStringWithNestedExpression('');
         } elseif ($this->tokens[$this->position]['type'] === 'IDENTIFIER') {
             $identifier = $this->match('IDENTIFIER');
             if ($this->tokens[$this->position]['type'] === 'DOT') {
@@ -126,10 +114,9 @@ class Parser {
                     'property' => $property
                 ];
             }
-            return $identifier;
+            return ['type' => 'identifier', 'value' => $identifier];
         }
         throw new Exception("Unexpected token parseTerm: " . $this->tokens[$this->position]['type']);
-
     }
 
     private function parsePropertyChain() {
@@ -144,7 +131,9 @@ class Parser {
     private function evaluateExpression($expression) {
         if (is_array($expression)) {
             switch ($expression['type']) {
-                case 'STRING':
+                case 'number':
+                case 'string':
+                case 'identifier':
                     return $expression['value'];
                 case 'binary_expression':
                     $left = $this->evaluateExpression($expression['left']);
@@ -170,6 +159,14 @@ class Parser {
                     return $condition ? $this->evaluateExpression($expression['true_value']) : $this->evaluateExpression($expression['false_value']);
                 case 'property_access':
                     return \lexical_analysis\process_attribute($expression['object'], $expression['property'], $this->sid, $this->oid, $this->mid, $this->jid, $this->type, $this->db, $this->para);
+                case 'code_block':
+                    return $this->evaluateExpression($expression['expression']);
+                case 'nested_string_expression':
+                    $result = '';
+                    foreach ($expression['parts'] as $part) {
+                        $result .= $this->evaluateExpression($part);
+                    }
+                    return $result;
                 default:
                     throw new Exception("Unknown expression type: " . $expression['type']);
             }
@@ -178,21 +175,57 @@ class Parser {
     }
 
     public function parse() {
-        $result = '';
+        $ast = [
+            'type' => 'root',
+            'children' => []
+        ];
+    
         while ($this->position < count($this->tokens)) {
             $token = $this->tokens[$this->position];
             if ($token['type'] === 'IDENTIFIER') {
-                $result .= $token['value'];
+                $ast['children'][] = ['type' => 'identifier', 'value' => $token['value']];
                 $this->position++;
             } elseif ($token['type'] === 'LBRACE') {
-                $result .= $this->parseCodeBlock();
+                $ast['children'][] = $this->parseCodeBlock();
             } elseif ($token['type'] === 'TEXT') {
-                $result .= $token['value'];
+                $ast['children'][] = ['type' => 'text', 'value' => $token['value']];
                 $this->position++;
             } else {
                 throw new Exception("Unexpected token: " . $token['type']);
             }
         }
+    
+        return $ast;
+    }
+
+    public function evaluate($ast) {
+        $result = '';
+        foreach ($ast['children'] as $node) {
+            if ($node['type'] === 'text') {
+                $result .= $node['value'];
+            } else {
+                $result .= $this->evaluateExpression($node);
+            }
+        }
         return $result;
+    }
+
+    public function printAST($node, $indent = 0) {
+        $indentStr = str_repeat('  ', $indent);
+    
+        if (is_array($node)) {
+            echo $indentStr . "{\n";
+            foreach ($node as $key => $value) {
+                echo $indentStr . "  $key: ";
+                if (is_array($value)) {
+                    $this->printAST($value, $indent + 1);
+                } else {
+                    echo $indentStr . "  $value\n";
+                }
+            }
+            echo $indentStr . "}\n";
+        } else {
+            echo $indentStr . $node . "\n";
+        }
     }
 }

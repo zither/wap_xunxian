@@ -1626,7 +1626,7 @@ function process_attribute($attr1, $attr2, $sid, $oid, $mid, $jid, $type, $db, $
             // 替换字符串中的变量
             $op = process_string($op, $sid, $oid, $mid, $jid, $type, $para);
 
-            $op = @eval("return $op;");
+            $op = @eval("return '$op';");
             //$input = str_replace("{{$match}}", $op, $input);
             break;
         case 'r':
